@@ -44,7 +44,7 @@ def openai_call(message: Message, model: str):
 
 def anthropic_call(message: Message, model: str):
     load_dotenv()
-    client = Anthropic()
+    client = Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
     images = [
         {
             "type": "image",
