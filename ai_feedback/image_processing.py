@@ -124,6 +124,7 @@ def process_image(args, prompt: str) -> tuple[str, str]:
 
         # Prompt the LLM
         requests.append(f"{message.content}\n\n{[str(image.value) for image in message.images]}")
+        print(requests)
         if args.model == Models.OPENAI.value:
             responses.append(openai_call(message, model="gpt-4o"))
         elif args.model == Models.CLAUDE.value:
