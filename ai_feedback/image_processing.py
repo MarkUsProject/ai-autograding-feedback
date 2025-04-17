@@ -90,19 +90,20 @@ def process_image(args, prompt: str) -> tuple[str, str]:
     if solution_notebook.is_file():
         extract_images(solution_notebook, OUTPUT_DIRECTORY, "solution")
 
-    message = Message(
-        role="user",
-        content=prompt["prompt_content"],
-        images=[]
-    )
-
     if args.question:
         questions = [args.question]
     else:
         questions = os.listdir(OUTPUT_DIRECTORY)
+
     requests: list[str] = []
     responses: list[str] = []
     for question in questions:
+        message = Message(
+            role="user",
+            content=prompt["prompt_content"],
+            images=[]
+        )
+
         # Add image attachments and extra information
         if prompt.get("include_question_context", False):
             context = read_question_context(OUTPUT_DIRECTORY, question)
