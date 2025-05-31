@@ -109,7 +109,8 @@ def main() -> int:
         "--output",
         type=str,
         choices=arg_options.get_enum_values(arg_options.OutputType),
-        required=True,
+        required=False,
+        default='stdout',
         help=HELP_MESSAGES["output"],
     )
 

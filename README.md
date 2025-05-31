@@ -36,7 +36,7 @@ For the image scope, the program takes up to two files, depending on the prompt 
 | `--assignment`   | Name of the directory which contains test files  | ✅ |
 | `--question`     | Specific question to evaluate                      | ❌ |
 | `--model`        | Model type (from `arg_options.Models`)           | ✅ |
-| `--output`       | Output type (from `arg_options.Output`)             | ✅ |
+| `--output`       | Output type (from `arg_options.Output`)             | ❌ |
 
 ** One of either prompt, prompt_custom, or prompt_text must be selected.
 
@@ -171,7 +171,7 @@ Example Markdown file name:
 ai_feedback/test_responses_md/test1/openai/code_table_20250310_143500.md
 ```
 
-- When `--output stdout` is selected, the prompt used and generated response will be sent to stdout.
+- When the `--output` argument is not given, the prompt used and generated response will be sent to stdout.
 - When `--output direct` is selected, only the generated response will be sent to stdout.
 
 ## Test Files
