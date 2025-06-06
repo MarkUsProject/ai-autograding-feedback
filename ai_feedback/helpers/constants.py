@@ -13,6 +13,7 @@ HELP_MESSAGES = {
     "question": "The specific question number to analyze within the assignment (if applicable).",
     "model": "The name of the LLM model to use for evaluation.",
     "output": "Format to display the output response.",
+    "llama_mode": "Specifies how to invoke llama.cpp: either directly via its command‐line interface (CLI) or by sending requests to a running llama-server instance.",
     "test_output": "The output of tests from evaluating the assignment.",
     "submission_image": "The file path for the image file.",
     "solution_image": "The file path to the solution image."

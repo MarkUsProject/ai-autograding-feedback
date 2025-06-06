@@ -41,6 +41,7 @@ For the image scope, the program takes up to two files, depending on the prompt 
 | `--test_output`      | File path for the file containing the results from tests          | ❌ |
 | `--submission_image` | File path for the submission image file                           | ❌ |
 | `--solution_image`   | File path for the solution image file                             | ❌ |
+| `--llama_mode`       | How to invoke deepSeek-v3 (choices in `arg_options.LlamaMode`)    | ❌ |
 ** One of either prompt, prompt_custom, or prompt_text must be selected.
 
 ## Scope
@@ -241,7 +242,8 @@ python -m ai_feedback \
   --solution_image <image_file_path> \
   --question <question_number> \
   --model <model_name> \
-  --output <markdown|stdout|direct>
+  --output <markdown|stdout|direct> \
+  --llama_mode <server|cli>
 ```
 
 - See the Arguments section for the different command line argument options, or run this command to see help messages and available choices:
@@ -275,6 +277,22 @@ python -m ai_feedback --prompt code_table \
 #### Evaluate the image for question 5b of ggr274 homework with Llama3.2-vision 
 ```sh
 python -m ai_feedback --prompt image_analyze --scope image --solution ./test_submissions/ggr274_homework5/image_test2/student_submission.ipynb --submission_image test_submissions/ggr274_homework5/image_test2/student_submission.png --question "Question 5b" --model llama3.2-vision:90b --output stdout
+```
+
+#### Evalute the Jupyter notebook of test1 of ggr274 using DeepSeek-v3 via llama.cpp server
+```sh
+python3 -m ai_feedback --prompt code_table --scope code \
+        --submission test_submissions/ggr274_homework5/test1/student_submission.ipynb \
+        --solution test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb \
+        --model deepSeek-v3 --llama_mode server
+```
+
+#### Evalute the Jupyter notebook of test1 of ggr274 using DeepSeek-v3 via llama.cpp cli
+```sh
+python3 -m ai_feedback --prompt code_table --scope code \
+        --submission test_submissions/ggr274_homework5/test1/student_submission.ipynb \
+        --solution test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb \
+        --model deepSeek-v3 --llama_mode cli
 ```
 
 #### Using Ollama

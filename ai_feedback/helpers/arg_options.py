@@ -61,6 +61,7 @@ model_mapping = {
     "codellama:latest": models.CodeLlamaModel,
     "claude-3.7-sonnet": models.ClaudeModel,
     "remote": models.RemoteModel,
+    "deepSeek-v3": models.DeepSeekV3Model,
 }
 
 
@@ -77,6 +78,7 @@ class Models(Enum):
     CODELLAMA = "codellama:latest"
     CLAUDE = "claude-3.7-sonnet"
     REMOTE = "remote"
+    DEEPSEEKV3 = "deepSeek-v3"
 
     def __str__(self):
         return self.value
@@ -106,3 +108,15 @@ class OutputType(Enum):
 
     def __str__(self):
         return self.value
+
+class LlamaMode(Enum):
+    """
+    Enum representing the output mode for invoking llama.cpp.
+    """
+
+    SERVER = "server"
+    CLI = "cli"
+
+    def __str__(self):
+        return self.value
+

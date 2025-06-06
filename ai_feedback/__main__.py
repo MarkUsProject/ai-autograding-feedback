@@ -148,6 +148,15 @@ def main() -> int:
         required=False,
         help=HELP_MESSAGES["solution_image"]
     )
+    parser.add_argument(
+        "--llama_mode",
+        type=str,
+        choices=arg_options.get_enum_values(arg_options.LlamaMode),
+        required=False,
+        default="cli",
+        help=HELP_MESSAGES["llama_mode"],
+    )
+
     args = parser.parse_args()
 
     # Auto-detect submission type if not provided
