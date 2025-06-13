@@ -59,9 +59,15 @@ def process_code(args, prompt: str, system_instructions: str) -> Tuple[str, str]
     elif args.submission_type != "python":
         raise SystemExit(f"Invalid submission type '{args.submission_type}'.")
 
-    assignment_files = [f for f in [args.submission, args.solution, args.test_output] if f]
-
-    prompt = render_prompt_template(prompt, assignment_files=assignment_files)
+    submission_image = Path(args.submission_image) if args.submission_image else None
+    prompt = render_prompt_template(
+        prompt,
+        submission=submission_file,
+        solution=solution_file,
+        test_output=test_output_file,
+        submission_image=submission_image,
+        question_num=args.question
+    )
 
     if args.model in model_mapping:
         model = model_mapping[args.model]()

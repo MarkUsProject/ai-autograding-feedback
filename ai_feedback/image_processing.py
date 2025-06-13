@@ -90,6 +90,7 @@ def process_image(args, prompt: dict) -> tuple[str, str]:
     Returns the LLM prompt delivered and the returned response."""
     OUTPUT_DIRECTORY = "output_images"
     submission_notebook = Path(args.submission)
+    solution_notebook = None
     if args.solution:
         solution_notebook = Path(args.solution)
     # Extract submission images
@@ -132,6 +133,8 @@ def process_image(args, prompt: dict) -> tuple[str, str]:
             
         rendered_prompt = render_prompt_template(
             prompt_content,
+            submission=submission_notebook,
+            solution=solution_notebook,
             has_submission_image="{submission_image}" in prompt_content,
             has_solution_image="{solution_image}" in prompt_content and args.solution_image
         )

@@ -35,9 +35,9 @@ def process_text(args, prompt: str, system_instructions: str) -> Tuple[str, str]
         if not solution_file.is_file():
             raise FileNotFoundError(f"Solution file '{solution_file}' not found.")
 
-    assignment_files = [args.submission, args.solution] if solution_file else [args.submission]
+    test_output = Path(args.test_output) if args.test_output else None
 
-    rendered_prompt = render_prompt_template(prompt, assignment_files=assignment_files)
+    rendered_prompt = render_prompt_template(prompt, solution=solution_file, submission=submission_file, test_output=test_output, question_num=args.question)
 
     if args.model in model_mapping:
         model = model_mapping[args.model]()
