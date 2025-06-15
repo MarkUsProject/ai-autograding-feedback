@@ -3,22 +3,19 @@ import json
 import os
 import sys
 from datetime import datetime
-
 from pathlib import Path
 
-from . import image_processing
-from . import code_processing
-from . import text_processing
+from . import code_processing, image_processing, text_processing
 from .helpers import arg_options
-from .helpers.constants import TEST_OUTPUTS_DIRECTORY, HELP_MESSAGES
+from .helpers.constants import HELP_MESSAGES, TEST_OUTPUTS_DIRECTORY
 
 
 def detect_submission_type(filename: str) -> str:
     """Automatically detect the submission type based on file extensions.
-    
+
     Args:
         filename (str): Path to the file.
-        
+
     Returns:
         str: The detected submission type ("jupyter", "python", or "pdf").
     """
@@ -28,7 +25,7 @@ def detect_submission_type(filename: str) -> str:
         return "python"
     elif filename.endswith(".pdf"):
         return "pdf"
-    
+
     print("Error: Could not auto-detect submission type.")
     sys.exit(1)
 
@@ -47,9 +44,7 @@ def load_markdown_template(template: str) -> str:
         SystemExit: If the template file is not found, the program will print an error and exit.
     """
     try:
-        template_file = os.path.join(
-            os.path.dirname(__file__), f"data/output/{template}.md"
-        )
+        template_file = os.path.join(os.path.dirname(__file__), f"data/output/{template}.md")
         with open(template_file, "r") as file:
             return file.read()
     except FileNotFoundError:
@@ -70,9 +65,7 @@ def load_markdown_prompt(prompt_name: str) -> dict:
         SystemExit: If the prompt file is not found
     """
     try:
-        prompt_file = os.path.join(
-            os.path.dirname(__file__), f"data/prompts/user/{prompt_name}.md"
-        )
+        prompt_file = os.path.join(os.path.dirname(__file__), f"data/prompts/user/{prompt_name}.md")
         with open(prompt_file, "r") as file:
             prompt_content = file.read()
         return {"prompt_content": prompt_content}
@@ -108,16 +101,8 @@ def main() -> int:
         required=False,
         help=HELP_MESSAGES["prompt"],
     )
-    parser.add_argument(
-        "--prompt_text",
-        type=str,
-        required=False,
-        help=HELP_MESSAGES["prompt_text"]
-    )
-    parser.add_argument(
-        "--prompt_custom",
-        action="store_true",
-        required=False)
+    parser.add_argument("--prompt_text", type=str, required=False, help=HELP_MESSAGES["prompt_text"])
+    parser.add_argument("--prompt_custom", action="store_true", required=False)
     parser.add_argument(
         "--scope",
         type=str,
@@ -125,24 +110,9 @@ def main() -> int:
         required=True,
         help=HELP_MESSAGES["scope"],
     )
-    parser.add_argument(
-        "--submission",
-        type=str,
-        required=True,
-        help=HELP_MESSAGES["submission"]
-    )
-    parser.add_argument(
-        "--solution",
-        type=str,
-        required=False,
-        default="",
-        help=HELP_MESSAGES["solution"])
-    parser.add_argument(
-        "--question",
-        type=str,
-        required=False,
-        help=HELP_MESSAGES["question"]
-    )
+    parser.add_argument("--submission", type=str, required=True, help=HELP_MESSAGES["submission"])
+    parser.add_argument("--solution", type=str, required=False, default="", help=HELP_MESSAGES["solution"])
+    parser.add_argument("--question", type=str, required=False, help=HELP_MESSAGES["question"])
     parser.add_argument(
         "--model",
         type=str,
@@ -157,30 +127,15 @@ def main() -> int:
         default='',
         help=HELP_MESSAGES["output"],
     )
-    parser.add_argument(
-        "--test_output",
-        type=str,
-        required=False,
-        default=None,
-        help=HELP_MESSAGES["test_output"])
-    parser.add_argument(
-        "--submission_image",
-        type=str,
-        required=False,
-        help=HELP_MESSAGES["submission_image"]
-    )
-    parser.add_argument(
-        "--solution_image",
-        type=str,
-        required=False,
-        help=HELP_MESSAGES["solution_image"]
-    )
+    parser.add_argument("--test_output", type=str, required=False, default=None, help=HELP_MESSAGES["test_output"])
+    parser.add_argument("--submission_image", type=str, required=False, help=HELP_MESSAGES["submission_image"])
+    parser.add_argument("--solution_image", type=str, required=False, help=HELP_MESSAGES["solution_image"])
     parser.add_argument(
         "--output_template",
         required=False,
         type=str,
         choices=arg_options.get_enum_values(arg_options.OutputTemplate),
-        default='response_only'
+        default='response_only',
     )
     parser.add_argument(
         "--system_prompt",
@@ -188,7 +143,7 @@ def main() -> int:
         required=False,
         choices=arg_options.get_enum_values(arg_options.SystemPrompt),
         help=HELP_MESSAGES["system_prompt"],
-        default="student_test_feedback"
+        default="student_test_feedback",
     )
     parser.add_argument(
         "--llama_mode",
@@ -207,7 +162,9 @@ def main() -> int:
 
     prompt_content = ""
 
-    system_prompt_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"data/prompts/system/{args.system_prompt}.md")
+    system_prompt_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), f"data/prompts/system/{args.system_prompt}.md"
+    )
     with open(system_prompt_path, "r") as file:
         system_instructions = file.read()
 
@@ -219,19 +176,13 @@ def main() -> int:
     else:
         if args.prompt:
             if not args.prompt.startswith("image") and args.scope == "image":
-                print(
-                    "Error: The prompt must start with 'image'. Please re-run the command with a valid prompt."
-                )
+                print("Error: The prompt must start with 'image'. Please re-run the command with a valid prompt.")
                 sys.exit(1)
             if not args.prompt.startswith("code") and args.scope == "code":
-                print(
-                    "Error: The prompt must start with 'code'. Please re-run the command with a valid prompt."
-                )
+                print("Error: The prompt must start with 'code'. Please re-run the command with a valid prompt.")
                 sys.exit(1)
             if not args.prompt.startswith("text") and args.scope == "text":
-                print(
-                    "Error: The prompt must start with 'text'. Please re-run the command with a valid prompt."
-                )
+                print("Error: The prompt must start with 'text'. Please re-run the command with a valid prompt.")
                 sys.exit(1)
 
             prompt = load_markdown_prompt(args.prompt)

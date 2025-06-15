@@ -14,21 +14,19 @@ After installing the libraries, you can run the tests in this file from the comm
 $ pytest test_hw5.py
 """
 
-# This import is required to import Jupyter notebooks like regular Python files
-from notebook_helper import importer
+# This is a library for helping write some tests
+import cds_testing
+import Homework_5_solution as solution
+import numpy as np
+import pandas as pd
+import pytest
 
 # This imports the student notebook, but does not yet run all the code cells
 # The module name needs to matche the student file name, omitting the .ipynb extension
 import test1_submission as hw
-import Homework_5_solution as solution
 
-# This is a library for helping write some tests
-import cds_testing
-
-import numpy as np
-import pandas as pd
-
-import pytest
+# This import is required to import Jupyter notebooks like regular Python files
+from notebook_helper import importer
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -38,12 +36,8 @@ def run_notebook():
 
 
 # This executes the code in the student and solution notebooks before running the tests.
-load_student_code = pytest.fixture(
-    cds_testing.load_code, params=[hw], scope="module", autouse=True
-)
-load_solution_code = pytest.fixture(
-    cds_testing.load_code, params=[solution], scope="module", autouse=True
-)
+load_student_code = pytest.fixture(cds_testing.load_code, params=[hw], scope="module", autouse=True)
+load_solution_code = pytest.fixture(cds_testing.load_code, params=[solution], scope="module", autouse=True)
 
 
 def test_time_boxplots():
@@ -52,14 +46,10 @@ def test_time_boxplots():
     """
 
     # Check that the variable exists in the notebook
-    assert hasattr(
-        hw, "time_boxplots"
-    ), 'We could not find a variable called "time_boxplots" in your file.'
+    assert hasattr(hw, "time_boxplots"), 'We could not find a variable called "time_boxplots" in your file.'
 
     # Make sure that the variable is string
-    assert isinstance(
-        hw.time_boxplots, np.ndarray
-    ), "Your time_boxplots variable is incorrectly defined."
+    assert isinstance(hw.time_boxplots, np.ndarray), "Your time_boxplots variable is incorrectly defined."
 
     flattened_boxplot_hw = hw.time_boxplots.flatten()
     flattened_boxplot_soln = solution.time_boxplots.flatten()
@@ -71,19 +61,11 @@ def test_time_boxplots():
     # Depending on the layout of the boxplots, there may be some axes that are empty.
     # For example if you have a 3 boxplots on a 2x2 grid, one of the titles will be an empty string
     # so we filter it when looping through all the titles and labels.
-    hw_titles = [
-        ax.get_title() for ax in flattened_boxplot_hw if len(ax.get_title()) > 0
-    ]
-    soln_titles = [
-        ax.get_title() for ax in flattened_boxplot_soln if len(ax.get_title()) > 0
-    ]
+    hw_titles = [ax.get_title() for ax in flattened_boxplot_hw if len(ax.get_title()) > 0]
+    soln_titles = [ax.get_title() for ax in flattened_boxplot_soln if len(ax.get_title()) > 0]
 
-    hw_labels = [
-        ax.get_xlabel() for ax in flattened_boxplot_hw if len(ax.get_xlabel()) > 0
-    ]
-    soln_labels = [
-        ax.get_xlabel() for ax in flattened_boxplot_soln if len(ax.get_xlabel()) > 0
-    ]
+    hw_labels = [ax.get_xlabel() for ax in flattened_boxplot_hw if len(ax.get_xlabel()) > 0]
+    soln_labels = [ax.get_xlabel() for ax in flattened_boxplot_soln if len(ax.get_xlabel()) > 0]
 
     assert sorted(hw_titles) == sorted(
         soln_titles
@@ -120,19 +102,11 @@ def test_time_boxplots_age_label():
     # Depending on the layout of the boxplots, there may be some axes that are empty.
     # For example if you have a 3 boxplots on a 2x2 grid, one of the titles will be an empty string
     # so we filter it when looping through all the titles and labels.
-    hw_titles = [
-        ax.get_title() for ax in flattened_boxplot_hw if len(ax.get_title()) > 0
-    ]
-    soln_titles = [
-        ax.get_title() for ax in flattened_boxplot_soln if len(ax.get_title()) > 0
-    ]
+    hw_titles = [ax.get_title() for ax in flattened_boxplot_hw if len(ax.get_title()) > 0]
+    soln_titles = [ax.get_title() for ax in flattened_boxplot_soln if len(ax.get_title()) > 0]
 
-    hw_labels = [
-        ax.get_xlabel() for ax in flattened_boxplot_hw if len(ax.get_xlabel()) > 0
-    ]
-    soln_labels = [
-        ax.get_xlabel() for ax in flattened_boxplot_soln if len(ax.get_xlabel()) > 0
-    ]
+    hw_labels = [ax.get_xlabel() for ax in flattened_boxplot_hw if len(ax.get_xlabel()) > 0]
+    soln_labels = [ax.get_xlabel() for ax in flattened_boxplot_soln if len(ax.get_xlabel()) > 0]
 
     assert sorted(hw_titles) == sorted(
         soln_titles
@@ -164,9 +138,7 @@ def test_time_use_subset_renamed_df_task1c():
         ["Socializing time", "Exercising time", "Sleep time", "Age group", "Province"]
     ]
 
-    pd.testing.assert_frame_equal(
-        hw_df_copy, soln_df_copy, obj="(Task 1c) time_use_subset_renamed_df"
-    )
+    pd.testing.assert_frame_equal(hw_df_copy, soln_df_copy, obj="(Task 1c) time_use_subset_renamed_df")
 
 
 # Check for the exact values of the variables

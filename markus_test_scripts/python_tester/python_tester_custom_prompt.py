@@ -1,10 +1,11 @@
-import pytest
 import os
 import os.path
-from llm_helpers import *
+
+import pytest
 
 # Modify depending on name of student's submission file
 import student_submission as submission
+from llm_helpers import *
 
 llm_feedback = ""
 

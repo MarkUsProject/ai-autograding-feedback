@@ -3,9 +3,10 @@ from pathlib import Path
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
-from ollama import chat, Message, Image
+from ollama import Image, Message, chat
 from openai import OpenAI
 from PIL import Image as PILImage
+
 from .helpers.arg_options import Models
 from .helpers.image_extractor import extract_images
 from .helpers.image_reader import *
@@ -105,37 +106,33 @@ def process_image(args, prompt: dict) -> tuple[str, str]:
 
     requests: list[str] = []
     responses: list[str] = []
-    
+
     for question in questions:
         # Start with the raw prompt content
         prompt_content = prompt["prompt_content"]
-        
+
         # Validate required image arguments based on prompt placeholders
         if "{submission_image}" in prompt_content and not args.submission_image:
             raise SystemExit(f"Prompt requires submission image but --submission-image not provided.")
         if "{solution_image}" in prompt_content and not args.solution_image:
             raise SystemExit(f"Prompt requires solution image but --solution-image not provided.")
-        
+
         # Always replace {context} when it appears
         if "{context}" in prompt_content:
             context = read_question_context(OUTPUT_DIRECTORY, question)
-            prompt_content = prompt_content.replace(
-                "{context}", "```\n" + context + "\n```"
-            )
+            prompt_content = prompt_content.replace("{context}", "```\n" + context + "\n```")
         if "{image_size}" in prompt_content:
             submission_image_path = args.submission_image
             # Only consider one image per question
             image = PILImage.open(submission_image_path)
-            prompt_content = prompt_content.replace(
-                "{image_size}", f"{image.width} by {image.height}"
-            )
-            
+            prompt_content = prompt_content.replace("{image_size}", f"{image.width} by {image.height}")
+
         rendered_prompt = render_prompt_template(
             prompt_content,
             has_submission_image="{submission_image}" in prompt_content,
-            has_solution_image="{solution_image}" in prompt_content and args.solution_image
+            has_solution_image="{solution_image}" in prompt_content and args.solution_image,
         )
-        
+
         message = Message(role="user", content=rendered_prompt, images=[])
         if "{submission_image}" in prompt_content:
             # Only consider one image per question
@@ -147,20 +144,12 @@ def process_image(args, prompt: dict) -> tuple[str, str]:
             message.images.append(Image(value=solution_image_path))
 
         # Prompt the LLM
-        requests.append(
-            f"{message.content}\n\n{[str(image.value) for image in message.images]}"
-        )
+        requests.append(f"{message.content}\n\n{[str(image.value) for image in message.images]}")
         if args.model == Models.OPENAI.value:
             responses.append(openai_call(message, model="gpt-4o"))
         elif args.model == Models.CLAUDE.value:
-            responses.append(
-                anthropic_call(message, model="claude-3-7-sonnet-20250219")
-            )
+            responses.append(anthropic_call(message, model="claude-3-7-sonnet-20250219"))
         else:
-            responses.append(
-                chat(
-                    model=args.model, messages=[message], options={"temperature": 0.33}
-                ).message.content
-            )
+            responses.append(chat(model=args.model, messages=[message], options={"temperature": 0.33}).message.content)
 
     return "\n\n---\n\n".join(requests), "\n\n---\n\n".join(responses)

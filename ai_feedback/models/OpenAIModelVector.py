@@ -1,8 +1,10 @@
 import os
-from typing import List, Optional
-from dotenv import load_dotenv
 from pathlib import Path
+from typing import List, Optional
+
 import openai
+from dotenv import load_dotenv
+
 from .Model import Model
 
 # Load environment variables from .env file
@@ -23,16 +25,12 @@ class OpenAIModelVector(Model):
         super().__init__()
 
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.vector_store = self.client.vector_stores.create(
-            name="Markus LLM Vector Store"
-        )
+        self.vector_store = self.client.vector_stores.create(name="Markus LLM Vector Store")
         self.model = self.client.beta.assistants.create(
             name="Markus LLM model",
             model="gpt-4-turbo",
             tools=[{"type": "file_search"}],
-            tool_resources={
-                "file_search": {"vector_store_ids": [self.vector_store.id]}
-            },
+            tool_resources={"file_search": {"vector_store_ids": [self.vector_store.id]}},
         )
 
     def generate_response(
@@ -97,9 +95,7 @@ class OpenAIModelVector(Model):
         """
         with open(file_path, "rb") as f:
             response = self.client.files.create(file=f, purpose="assistants")
-            self.client.vector_stores.files.create(
-                vector_store_id=self.vector_store.id, file_id=response.id
-            )
+            self.client.vector_stores.files.create(vector_store_id=self.vector_store.id, file_id=response.id)
         return response.id
 
     def _call_openai(self, prompt: str) -> str:
@@ -114,18 +110,12 @@ class OpenAIModelVector(Model):
         """
         thread = self.client.beta.threads.create()
 
-        self.client.beta.threads.messages.create(
-            thread_id=thread.id, role="user", content=prompt
-        )
+        self.client.beta.threads.messages.create(thread_id=thread.id, role="user", content=prompt)
 
-        run = self.client.beta.threads.runs.create(
-            thread_id=thread.id, assistant_id=self.model.id
-        )
+        run = self.client.beta.threads.runs.create(thread_id=thread.id, assistant_id=self.model.id)
 
         while run.status not in ["completed", "failed"]:
-            run = self.client.beta.threads.runs.retrieve(
-                thread_id=thread.id, run_id=run.id
-            )
+            run = self.client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
 
         if run.status == "failed":
             print("Error details:", run.last_error)
@@ -152,9 +142,7 @@ class OpenAIModelVector(Model):
         """
         for file_id in file_ids:
             self.client.files.delete(file_id)
-            self.client.vector_stores.files.delete(
-                vector_store_id=self.vector_store.id, file_id=file_id
-            )
+            self.client.vector_stores.files.delete(vector_store_id=self.vector_store.id, file_id=file_id)
 
     def _delete_all_models(self) -> None:
         """
@@ -171,6 +159,4 @@ class OpenAIModelVector(Model):
         files = self.client.files.list()
         for file in files:
             self.client.files.delete(file.id)
-            self.client.vector_stores.files.delete(
-                vector_store_id=self.vector_store.id, file_id=file.id
-            )
+            self.client.vector_stores.files.delete(vector_store_id=self.vector_store.id, file_id=file.id)

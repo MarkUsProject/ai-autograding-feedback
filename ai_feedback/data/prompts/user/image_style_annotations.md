@@ -6,4 +6,4 @@ Evaluate the graphs in the {image_size} image regarding the characteristics belo
 - Subplot Titles
 - Axis Labels
 - Scale numbers
-- Graph Type 
+- Graph Type

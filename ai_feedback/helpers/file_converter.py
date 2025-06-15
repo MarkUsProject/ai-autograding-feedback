@@ -1,6 +1,7 @@
-import nbformat
 import os
 from pathlib import Path
+
+import nbformat
 
 
 def rename_files(file_path: str) -> str:

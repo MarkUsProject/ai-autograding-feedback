@@ -1,12 +1,12 @@
 import os
-import sys
 import re
-from dotenv import load_dotenv
-import anthropic
-import PyPDF2
+import sys
+from pathlib import Path
 from typing import List, Optional, Tuple
 
-from pathlib import Path
+import anthropic
+import PyPDF2
+from dotenv import load_dotenv
 
 from .Model import Model
 
@@ -104,9 +104,7 @@ class ClaudeModel(Model):
                 if stripped_line.strip():
                     file_contents += f"(Line {i}) {stripped_line}\n"
                 else:
-                    file_contents += (
-                        f"(Line {i}) {line}"  # Keep blank lines for readability
-                    )
+                    file_contents += f"(Line {i}) {line}"  # Keep blank lines for readability
 
             file_contents += "\n"
 
@@ -126,7 +124,6 @@ class ClaudeModel(Model):
         """
         student_pdf_content = ""
         instructor_pdf_content = ""
-
 
         if submission_file:
             student_pdf_content = self._extract_text_from_pdf(submission_file)
@@ -164,9 +161,7 @@ class ClaudeModel(Model):
 
         return text
 
-    def _get_question_contents(
-        self, assignment_files: List[Path], question_num: int
-    ) -> str:
+    def _get_question_contents(self, assignment_files: List[Path], question_num: int) -> str:
         """
         Retrieves content related to a specific question number from assignment files.
 
@@ -184,18 +179,12 @@ class ClaudeModel(Model):
         task_found = False
 
         for file_path in assignment_files:
-            if (
-                file_path.suffix != ".txt"
-                or "error_output" in file_path.name
-                or file_path.name == ".DS_Store"
-            ):
+            if file_path.suffix != ".txt" or "error_output" in file_path.name or file_path.name == ".DS_Store":
                 continue
 
             content = file_path.read_text()
 
-            intro_match = re.search(
-                r"(## Introduction\b.*?)(?=\n##|\Z)", content, re.DOTALL
-            )
+            intro_match = re.search(r"(## Introduction\b.*?)(?=\n##|\Z)", content, re.DOTALL)
             intro_content = intro_match.group(1).strip() if intro_match else ""
 
             task_pattern = rf"(## Task {question_num}\b.*?)(?=\n##|\Z)"
@@ -215,4 +204,3 @@ class ClaudeModel(Model):
             sys.exit(1)
 
         return file_contents.strip()
-        

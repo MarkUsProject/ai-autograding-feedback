@@ -91,7 +91,7 @@ ________________ test_time_boxplots[Homework_5_solutions-test2] ________________
         """Test that the 'time_boxplots' variable has been defined
         correctly in your notebook.
         """
-    
+
         # Check that the variable exists in the notebook
 >       assert hasattr(hw, 'time_boxplots'),\
                 'We could not find a variable called "time_boxplots" in your file.'
@@ -106,7 +106,7 @@ ___________ test_time_boxplots_age_label[Homework_5_solutions-test2] ___________
         """Test that the 'time_boxplots_age_label' variable has been defined
         correctly in your notebook.
         """
-    
+
         # Check that the variable exists in the notebook
 >       assert hasattr(hw, 'time_boxplots_age_label'),\
                 'We could not find a variable called "time_boxplots_age_label" in your file.'
@@ -125,30 +125,30 @@ var_name = 'group_means', args = {}
     def test_answer_equality(student_hw, soln_nb, var_name, args):
         msg = f"ISSUE FOUND: The required variable name \"{var_name}\" is missing from your submission.\n"
         assert hasattr(student_hw, var_name), msg
-    
+
         student_value = getattr(student_hw, var_name)
         soln_value = getattr(soln_nb, var_name)
-    
+
         # If either variable is of numpy generic type, then we can skip the type check
         # and go straight to the equality check. As some of the values in the hw/soln may be correct
         # but the difference might be <int> vs <numpy.int64>.
         if not(isinstance(student_value, np.generic) or isinstance(soln_value, np.generic)):
             assert_type(var_name, student_value, soln_value)
-    
+
         if isinstance(soln_value, pd.Series):
             pd.testing.assert_series_equal(student_value, soln_value, obj=var_name, **args)
         elif isinstance(soln_value, pd.DataFrame):
 >           pd.testing.assert_frame_equal(student_value, soln_value, obj=var_name, **args)
 
-/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/cds_testing/__init__.py:58: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/cds_testing/__init__.py:58:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 testing.pyx:55: in pandas._libs.testing.assert_almost_equal
     ???
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 >   ???
 E   AssertionError: group_means.iloc[:, 3] (column name="Total time (hour)") are different
-E   
+E
 E   group_means.iloc[:, 3] (column name="Total time (hour)") values are different (100.0 %)
 E   [index]: [15-24, 25-34, 35-44, 45-54, 55-64, 65-74, 75+]
 E   [left]:  [81.78468664187186, 81.78468664187186, 81.78468664187186, 81.78468664187186, 81.78468664187186, 81.78468664187186, 81.78468664187186]
@@ -166,30 +166,30 @@ var_name = 'group_means_sorted', args = {}
     def test_answer_equality(student_hw, soln_nb, var_name, args):
         msg = f"ISSUE FOUND: The required variable name \"{var_name}\" is missing from your submission.\n"
         assert hasattr(student_hw, var_name), msg
-    
+
         student_value = getattr(student_hw, var_name)
         soln_value = getattr(soln_nb, var_name)
-    
+
         # If either variable is of numpy generic type, then we can skip the type check
         # and go straight to the equality check. As some of the values in the hw/soln may be correct
         # but the difference might be <int> vs <numpy.int64>.
         if not(isinstance(student_value, np.generic) or isinstance(soln_value, np.generic)):
             assert_type(var_name, student_value, soln_value)
-    
+
         if isinstance(soln_value, pd.Series):
             pd.testing.assert_series_equal(student_value, soln_value, obj=var_name, **args)
         elif isinstance(soln_value, pd.DataFrame):
 >           pd.testing.assert_frame_equal(student_value, soln_value, obj=var_name, **args)
 
-/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/cds_testing/__init__.py:58: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/cds_testing/__init__.py:58:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 testing.pyx:55: in pandas._libs.testing.assert_almost_equal
     ???
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 >   ???
 E   AssertionError: group_means_sorted.index are different
-E   
+E
 E   group_means_sorted.index values are different (85.71429 %)
 E   [left]:  Index(['15-24', '25-34', '35-44', '45-54', '55-64', '65-74', '75+'], dtype='object')
 E   [right]: Index(['15-24', '75+', '55-64', '65-74', '25-34', '35-44', '45-54'], dtype='object')

@@ -1,28 +1,27 @@
-from dotenv import load_dotenv
 import json
 import os
-import pytest
 import re
 import subprocess
 import sys
-from typing import Any, List, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-ANNOTATION_PROMPT = """These are the student mistakes you previously identified in the 
-last message. For each of the mistakes you identified, return a JSON object containing 
-an array of annotations, referencing the student's submission file for line and column #s. 
-Each annotation should include: filename: The name of the student's file. content: 
+import pytest
+from dotenv import load_dotenv
+
+ANNOTATION_PROMPT = """These are the student mistakes you previously identified in the
+last message. For each of the mistakes you identified, return a JSON object containing
+an array of annotations, referencing the student's submission file for line and column #s.
+Each annotation should include: filename: The name of the student's file. content:
 A short description of the mistake. line_start and line_end: The line number(s) where the
-mistake occurs. Ensure the JSON is valid and properly formatted. Here is a sample format 
-of the json array to return: { \"annotations\": [{\"filename\": \"student_code.py\", 
-\"content\": \"Variable 'x' is unused.\", \"line_start\": 5, \"line_end\": 5,]}. 
-ONLY return the json object and nothing else. Make sure the line #s don't exceed 
+mistake occurs. Ensure the JSON is valid and properly formatted. Here is a sample format
+of the json array to return: { \"annotations\": [{\"filename\": \"student_code.py\",
+\"content\": \"Variable 'x' is unused.\", \"line_start\": 5, \"line_end\": 5,]}.
+ONLY return the json object and nothing else. Make sure the line #s don't exceed
 the number of lines in the file. You can use markdown syntax in the annotation's content,
 especially when denoting code."""
 
 
-def add_annotation_columns(
-    annotations: List[Dict[str, Any]], submission: Any
-) -> List[Dict[str, Any]]:
+def add_annotation_columns(annotations: List[Dict[str, Any]], submission: Any) -> List[Dict[str, Any]]:
     """
     Add `column_start` and `column_end` metadata to each annotation
     based on the lines in the student's submission file.
@@ -52,9 +51,7 @@ def add_annotation_columns(
         line_end = annotation["line_end"]
 
         if not file_lines or line_start > len(file_lines) or line_end > len(file_lines):
-            print(
-                f"Skipping invalid line numbers for {filename}: {line_start}-{line_end}"
-            )
+            print(f"Skipping invalid line numbers for {filename}: {line_start}-{line_end}")
             continue
 
         column_starts = []
@@ -162,9 +159,7 @@ def extract_json(response: str) -> List[Dict[str, Any]]:
     Returns:
         A list of parsed JSON dictionaries extracted from the input string.
     """
-    matches = re.findall(
-        r"(\{(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*\})", response
-    )
+    matches = re.findall(r"(\{(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*\})", response)
     return [json.loads(match) for match in matches]
 
 

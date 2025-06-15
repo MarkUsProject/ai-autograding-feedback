@@ -1,13 +1,13 @@
-import pytest
 import numpy as np
-from cnn_submission import (
-    convolution_2d,
-    max_pooling_2d,
-    CNN,
-)  # Importing student version
+import pytest
+from cnn_solution import CNN as SolCNN
 from cnn_solution import convolution_2d as sol_convolution
 from cnn_solution import max_pooling_2d as sol_max_pooling
-from cnn_solution import CNN as SolCNN
+from cnn_submission import (  # Importing student version
+    CNN,
+    convolution_2d,
+    max_pooling_2d,
+)
 
 
 def test_convolution():
@@ -38,6 +38,4 @@ def test_cnn_forward():
     student_output = student_cnn.forward(input_data)
     solution_output = solution_cnn.forward(input_data)
 
-    assert np.allclose(
-        student_output, solution_output
-    ), "CNN forward pass output differs!"
+    assert np.allclose(student_output, solution_output), "CNN forward pass output differs!"

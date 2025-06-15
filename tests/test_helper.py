@@ -1,12 +1,15 @@
 import shutil
 import sys
-from pathlib import Path
-from ai_feedback.__main__ import main
 from datetime import datetime
-import pytest
+from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
+from ai_feedback.__main__ import main
+
 all_prompts = []
+
 
 @pytest.fixture(scope="session", autouse=True)
 def collect_prompts_and_write_individual_files():
@@ -54,15 +57,13 @@ def mock_and_capture(request):
         all_prompts.append((test_name, "Model.generate_response", prompt))
         return prompt, prompt
 
-    patch("ai_feedback.models.Model.Model.generate_response",
-          side_effect=fake_base).start()
+    patch("ai_feedback.models.Model.Model.generate_response", side_effect=fake_base).start()
 
     def fake_openai_call(prompt, system_instructions):
         all_prompts.append((test_name, "OpenAIModel._call_openai", prompt))
         return prompt
 
-    patch("ai_feedback.models.OpenAIModel._call_openai",
-          side_effect=fake_openai_call).start()
+    patch("ai_feedback.models.OpenAIModel._call_openai", side_effect=fake_openai_call).start()
 
     class DummyMsg:
         def __init__(self, text):
@@ -77,8 +78,7 @@ def mock_and_capture(request):
         all_prompts.append((test_name, "image_processing.chat", text))
         return DummyReply(text)
 
-    patch("ai_feedback.image_processing.chat",
-          side_effect=fake_ip_chat).start()
+    patch("ai_feedback.image_processing.chat", side_effect=fake_ip_chat).start()
 
     def fake_ds_chat(model, messages, **kwargs):
         text = messages[-1]["content"]

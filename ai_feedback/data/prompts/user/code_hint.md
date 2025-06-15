@@ -3,4 +3,4 @@ For each mistake, provide a hint to the student to fix their mistake, without gi
 {file_references}
 
 Files to Reference:
-{file_contents} 
+{file_contents}

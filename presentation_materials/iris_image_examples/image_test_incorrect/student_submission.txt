@@ -3,7 +3,7 @@ Markdown Cell:
 
 ## Introduction
 
-In this assignment we explore: 
+In this assignment we explore:
 - linear regression
 - visualizing distributions
 
@@ -50,4 +50,3 @@ boxplots_labelled = df.boxplot(
     by='species',
     figsize=(10, 10)
 )
-

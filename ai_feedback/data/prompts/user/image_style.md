@@ -6,4 +6,4 @@ Evaluate the graphs in the image regarding the characteristics below and suggest
 - Subplot Titles
 - Axis Labels
 - Scale numbers
-- Graph Type 
+- Graph Type

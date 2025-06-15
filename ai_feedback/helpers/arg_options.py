@@ -1,4 +1,5 @@
 from enum import Enum
+
 from .. import models
 
 
@@ -96,6 +97,7 @@ class FileType(Enum):
     def __str__(self):
         return self.value
 
+
 class OutputTemplate(Enum):
     """
     Enum representing different output template types that the application can process.
@@ -112,6 +114,7 @@ class SystemPrompt(Enum):
     """
     Enum representing different types of system prompts for AI models.
     """
+
     TEST_FEEDBACK = "student_test_feedback"
 
     def __str__(self):
@@ -128,4 +131,3 @@ class LlamaMode(Enum):
 
     def __str__(self):
         return self.value
-

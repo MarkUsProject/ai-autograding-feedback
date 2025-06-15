@@ -1,10 +1,11 @@
 import os
 import subprocess
 import sys
-import requests
-from typing import Optional, Tuple
-from dotenv import load_dotenv
 from pathlib import Path
+from typing import Optional, Tuple
+
+import requests
+from dotenv import load_dotenv
 
 from .Model import Model
 
@@ -14,6 +15,7 @@ LLAMA_CLI_PATH = os.getenv('LLAMA_CLI_PATH')
 LLAMA_SERVER_URL = os.getenv("LLAMA_SERVER_URL").strip()
 LLAMA_SERVER_URL = LLAMA_SERVER_URL if LLAMA_SERVER_URL and ":" in LLAMA_SERVER_URL else None
 GPU_LAYERS = "40"
+
 
 class DeepSeekV3Model(Model):
     def __init__(self):
@@ -77,13 +79,11 @@ class DeepSeekV3Model(Model):
         """
         missing = [n for n in names if not globals().get(n)]
         if missing:
-            raise RuntimeError(
-                f"Error: Environment variable(s) {', '.join(missing)} not set"
-            )
+            raise RuntimeError(f"Error: Environment variable(s) {', '.join(missing)} not set")
 
     def _get_response_server(
-            self,
-            prompt: str,
+        self,
+        prompt: str,
     ) -> str:
         """
         Generate a model response using the prompt
@@ -117,8 +117,8 @@ class DeepSeekV3Model(Model):
         return model_output
 
     def _get_response_cli(
-            self,
-            prompt: str,
+        self,
+        prompt: str,
     ) -> str:
         """
         Generate a model response using the prompt
@@ -133,20 +133,17 @@ class DeepSeekV3Model(Model):
 
         cmd = [
             LLAMA_CLI_PATH,
-            "-m", LLAMA_MODEL_PATH,
-            "--n-gpu-layers", GPU_LAYERS,
+            "-m",
+            LLAMA_MODEL_PATH,
+            "--n-gpu-layers",
+            GPU_LAYERS,
             "--single-turn",
-            "--no-display-prompt"
+            "--no-display-prompt",
         ]
 
         try:
             completed = subprocess.run(
-                cmd,
-                input=prompt.encode(),
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                timeout=300
+                cmd, input=prompt.encode(), check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300
             )
         except subprocess.TimeoutExpired as e:
             # If the process hangs for more than 5 minutes, print whatever has been captured so far
@@ -159,9 +156,7 @@ class DeepSeekV3Model(Model):
             print("ERROR: llama-cli returned non-zero exit code.", file=sys.stdout, flush=True)
             print("llama-cli stdout:", e.stdout, file=sys.stdout, flush=True)
             print("llama-cli stderr:", e.stderr, file=sys.stdout, flush=True)
-            raise RuntimeError(
-                f"llama.cpp failed (code {e.returncode}): {e.stderr.strip()}"
-            )
+            raise RuntimeError(f"llama.cpp failed (code {e.returncode}): {e.stderr.strip()}")
 
         # Decode with 'replace' so invalid UTF-8 bytes become U+FFFD
         return completed.stdout.decode('utf-8', errors='replace')

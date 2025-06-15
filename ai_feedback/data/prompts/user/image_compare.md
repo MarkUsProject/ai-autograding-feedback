@@ -9,4 +9,4 @@ Provide the differences between these two images regarding the graph elements be
 - Scale
 - Graph Type
 - Font
-- Data Points 
+- Data Points

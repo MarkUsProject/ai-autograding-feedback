@@ -53,7 +53,7 @@ def process_text(args, prompt: str, system_instructions: str) -> Tuple[str, str]
             scope=args.scope,
             question_num=args.question,
             system_instructions=system_instructions,
-            llama_mode=args.llama_mode
+            llama_mode=args.llama_mode,
         )
     else:
         request, response = model.generate_response(
@@ -62,7 +62,7 @@ def process_text(args, prompt: str, system_instructions: str) -> Tuple[str, str]
             submission_file=submission_file,
             scope=args.scope,
             system_instructions=system_instructions,
-            llama_mode=args.llama_mode
+            llama_mode=args.llama_mode,
         )
 
     return request, response

@@ -169,7 +169,7 @@ ________________ test_time_boxplots[Homework_5_solutions-test1] ________________
         """Test that the 'time_boxplots' variable has been defined
         correctly in your notebook.
         """
-    
+
         # Check that the variable exists in the notebook
 >       assert hasattr(hw, 'time_boxplots'),\
                 'We could not find a variable called "time_boxplots" in your file.'
@@ -184,7 +184,7 @@ ___________ test_time_boxplots_age_label[Homework_5_solutions-test1] ___________
         """Test that the 'time_boxplots_age_label' variable has been defined
         correctly in your notebook.
         """
-    
+
         # Check that the variable exists in the notebook
 >       assert hasattr(hw, 'time_boxplots_age_label'),\
                 'We could not find a variable called "time_boxplots_age_label" in your file.'
@@ -200,7 +200,7 @@ expected_var_name = 'well_balanced'
     @pytest.mark.parametrize("expected_var_name", expected_var_names)
     def test_variable_name(expected_var_name: str):
         msg = f"ISSUE FOUND: The required variable name \"{expected_var_name}\" is missing from your submission.\n"
-    
+
 >       assert hasattr(hw, expected_var_name), msg
 E       AssertionError: ISSUE FOUND: The required variable name "well_balanced" is missing from your submission.
 
@@ -212,7 +212,7 @@ expected_var_name = 'well_balanced_df'
     @pytest.mark.parametrize("expected_var_name", expected_var_names)
     def test_variable_name(expected_var_name: str):
         msg = f"ISSUE FOUND: The required variable name \"{expected_var_name}\" is missing from your submission.\n"
-    
+
 >       assert hasattr(hw, expected_var_name), msg
 E       AssertionError: ISSUE FOUND: The required variable name "well_balanced_df" is missing from your submission.
 
@@ -224,7 +224,7 @@ expected_var_name = 'diff'
     @pytest.mark.parametrize("expected_var_name", expected_var_names)
     def test_variable_name(expected_var_name: str):
         msg = f"ISSUE FOUND: The required variable name \"{expected_var_name}\" is missing from your submission.\n"
-    
+
 >       assert hasattr(hw, expected_var_name), msg
 E       AssertionError: ISSUE FOUND: The required variable name "diff" is missing from your submission.
 
@@ -236,7 +236,7 @@ expected_var_name = 'pct_lost'
     @pytest.mark.parametrize("expected_var_name", expected_var_names)
     def test_variable_name(expected_var_name: str):
         msg = f"ISSUE FOUND: The required variable name \"{expected_var_name}\" is missing from your submission.\n"
-    
+
 >       assert hasattr(hw, expected_var_name), msg
 E       AssertionError: ISSUE FOUND: The required variable name "pct_lost" is missing from your submission.
 
@@ -248,7 +248,7 @@ expected_var_name = 'group_means'
     @pytest.mark.parametrize("expected_var_name", expected_var_names)
     def test_variable_name(expected_var_name: str):
         msg = f"ISSUE FOUND: The required variable name \"{expected_var_name}\" is missing from your submission.\n"
-    
+
 >       assert hasattr(hw, expected_var_name), msg
 E       AssertionError: ISSUE FOUND: The required variable name "group_means" is missing from your submission.
 
@@ -260,7 +260,7 @@ expected_var_name = 'group_means_sorted'
     @pytest.mark.parametrize("expected_var_name", expected_var_names)
     def test_variable_name(expected_var_name: str):
         msg = f"ISSUE FOUND: The required variable name \"{expected_var_name}\" is missing from your submission.\n"
-    
+
 >       assert hasattr(hw, expected_var_name), msg
 E       AssertionError: ISSUE FOUND: The required variable name "group_means_sorted" is missing from your submission.
 
@@ -272,7 +272,7 @@ expected_var_name = 'well_balanced_age_label_df'
     @pytest.mark.parametrize("expected_var_name", expected_var_names)
     def test_variable_name(expected_var_name: str):
         msg = f"ISSUE FOUND: The required variable name \"{expected_var_name}\" is missing from your submission.\n"
-    
+
 >       assert hasattr(hw, expected_var_name), msg
 E       AssertionError: ISSUE FOUND: The required variable name "well_balanced_age_label_df" is missing from your submission.
 

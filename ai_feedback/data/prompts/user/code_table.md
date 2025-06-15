@@ -3,4 +3,4 @@ Compare the student's code and solution code. Create a final evaluation table wi
 {file_references}
 
 Files to Reference:
-{file_contents} 
+{file_contents}

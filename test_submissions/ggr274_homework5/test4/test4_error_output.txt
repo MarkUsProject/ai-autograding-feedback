@@ -91,7 +91,7 @@ ________________ test_time_boxplots[Homework_5_solutions-test4] ________________
         """Test that the 'time_boxplots' variable has been defined
         correctly in your notebook.
         """
-    
+
         # Check that the variable exists in the notebook
 >       assert hasattr(hw, 'time_boxplots'),\
                 'We could not find a variable called "time_boxplots" in your file.'
@@ -106,7 +106,7 @@ ___________ test_time_boxplots_age_label[Homework_5_solutions-test4] ___________
         """Test that the 'time_boxplots_age_label' variable has been defined
         correctly in your notebook.
         """
-    
+
         # Check that the variable exists in the notebook
 >       assert hasattr(hw, 'time_boxplots_age_label'),\
                 'We could not find a variable called "time_boxplots_age_label" in your file.'
@@ -125,30 +125,30 @@ var_name = 'well_balanced_age_label_df', args = {}
     def test_answer_equality(student_hw, soln_nb, var_name, args):
         msg = f"ISSUE FOUND: The required variable name \"{var_name}\" is missing from your submission.\n"
         assert hasattr(student_hw, var_name), msg
-    
+
         student_value = getattr(student_hw, var_name)
         soln_value = getattr(soln_nb, var_name)
-    
+
         # If either variable is of numpy generic type, then we can skip the type check
         # and go straight to the equality check. As some of the values in the hw/soln may be correct
         # but the difference might be <int> vs <numpy.int64>.
         if not(isinstance(student_value, np.generic) or isinstance(soln_value, np.generic)):
             assert_type(var_name, student_value, soln_value)
-    
+
         if isinstance(soln_value, pd.Series):
             pd.testing.assert_series_equal(student_value, soln_value, obj=var_name, **args)
         elif isinstance(soln_value, pd.DataFrame):
 >           pd.testing.assert_frame_equal(student_value, soln_value, obj=var_name, **args)
 
-/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/cds_testing/__init__.py:58: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/cds_testing/__init__.py:58:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 testing.pyx:55: in pandas._libs.testing.assert_almost_equal
     ???
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 >   ???
 E   AssertionError: well_balanced_age_label_df.iloc[:, 8] (column name="Age group label") are different
-E   
+E
 E   well_balanced_age_label_df.iloc[:, 8] (column name="Age group label") values are different (68.01619 %)
 E   [index]: [3, 7, 23, 48, 54, 60, 62, 71, 76, 107, 149, 255, 313, 358, 387, 423, 456, 486, 489, 500, 501, 503, 504, 523, 542, 565, 579, 587, 624, 657, 683, 726, 742, 809, 829, 838, 846, 862, 895, 929, 936, 1006, 1010, 1016, 1021, 1035, 1043, 1053, 1055, 1060, 1088, 1093, 1109, 1111, 1139, 1162, 1170, 1248, 1287, 1313, 1316, 1359, 1398, 1453, 1498, 1510, 1545, 1567, 1585, 1590, 1596, 1606, 1614, 1622, 1632, 1643, 1644, 1653, 1697, 1742, 1788, 1810, 1853, 1874, 1884, 1927, 1962, 1990, 2037, 2068, 2141, 2167, 2171, 2173, 2176, 2192, 2209, 2228, 2233, 2327, ...]
 E   [left]:  [65-75, 55+, 65-75, 65-75, 15-24, 55+, 35-44, 65-75, nan, 65-75, 65-75, 35-44, 35-44, 65-75, 55+, 55+, nan, 55+, nan, 25-34, 35-44, nan, 35-44, 15-24, 35-44, nan, 55+, nan, nan, nan, 65-75, 35-44, 55+, 35-44, 55+, 35-44, 35-44, 15-24, 65-75, nan, 65-75, nan, 35-44, 65-75, 25-34, 25-34, 55+, 65-75, 55+, 65-75, 55+, 65-75, 55+, 25-34, nan, 55+, 15-24, nan, 65-75, nan, 65-75, nan, 15-24, 65-75, 65-75, 65-75, 15-24, 25-34, 25-34, nan, 65-75, nan, 65-75, nan, nan, 25-34, 25-34, 25-34, nan, 65-75, nan, 35-44, 55+, nan, 25-34, 65-75, nan, 55+, 65-75, nan, 55+, 55+, 15-24, 35-44, 25-34, 65-75, 55+, 55+, nan, 55+, ...]

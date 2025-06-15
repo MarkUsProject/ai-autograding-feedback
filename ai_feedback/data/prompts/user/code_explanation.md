@@ -3,4 +3,4 @@ For each mistake, give the line of code from the student's submission file which
 {file_references}
 
 Files to Reference:
-{file_contents} 
+{file_contents}

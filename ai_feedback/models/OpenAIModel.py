@@ -1,11 +1,13 @@
 import os
-import sys
 import re
+import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
-from dotenv import load_dotenv
+
 import openai
 import PyPDF2
+from dotenv import load_dotenv
+
 from .Model import Model
 
 load_dotenv()
@@ -133,9 +135,7 @@ class OpenAIModel(Model):
                 text += f"Page {page_num}:\n{cleaned_text}\n\n"
         return text
 
-    def _get_question_contents(
-        self, assignment_files: List[Path], question_num: int
-    ) -> str:
+    def _get_question_contents(self, assignment_files: List[Path], question_num: int) -> str:
         """
         Retrieve contents of files specifically for a targeted question number.
 
@@ -156,19 +156,13 @@ class OpenAIModel(Model):
         task_found = False
 
         for file_path in assignment_files:
-            if (
-                file_path.suffix != '.txt'
-                or "error_output" in file_path.name
-                or file_path.name == ".DS_Store"
-            ):
+            if file_path.suffix != '.txt' or "error_output" in file_path.name or file_path.name == ".DS_Store":
                 continue
 
             with open(file_path, "r", encoding="utf-8") as file:
                 content = file.read()
 
-            intro_match = re.search(
-                r"(## Introduction\b.*?)(?=\n##|\Z)", content, re.DOTALL
-            )
+            intro_match = re.search(r"(## Introduction\b.*?)(?=\n##|\Z)", content, re.DOTALL)
             intro_content = intro_match.group(1).strip() if intro_match else ""
 
             task_pattern = rf"(## Task {question_num}\b.*?)(?=\n##|\Z)"

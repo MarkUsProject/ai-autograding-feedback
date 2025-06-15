@@ -1,7 +1,6 @@
+from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import patch
-
-from pathlib import Path
 
 from tests.test_helper import run_cli_and_capture
 
@@ -26,21 +25,25 @@ def test_deepseek_v3_cli_code_scope_stdout(capsys, monkeypatch):
     parent = Path(__file__).parent.parent.parent
 
     with patch("subprocess.run") as mock_run:
-        mock_run.return_value = CompletedProcess(
-            args=["./llama-cli"], returncode=0, stdout=fake_stdout, stderr=b""
-        )
+        mock_run.return_value = CompletedProcess(args=["./llama-cli"], returncode=0, stdout=fake_stdout, stderr=b"")
 
         args = [
-            "--prompt", "code_table",
-            "--scope", "code",
-            "--submission", str(parent / "test_submissions/ggr274_homework5/test1/student_submission.ipynb"),
-            "--solution",   str(parent / "test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb"),
-            "--model", "deepSeek-v3",
+            "--prompt",
+            "code_table",
+            "--scope",
+            "code",
+            "--submission",
+            str(parent / "test_submissions/ggr274_homework5/test1/student_submission.ipynb"),
+            "--solution",
+            str(parent / "test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb"),
+            "--model",
+            "deepSeek-v3",
         ]
         output = run_cli_and_capture(args, capsys)
 
     assert "FAKE AI RESPONSE LINE 1" in output
     assert "FAKE AI RESPONSE LINE 2" in output
+
 
 def test_deepseek_v3_server_mode_code_scope_stdout(capsys, monkeypatch):
     """
@@ -77,12 +80,18 @@ def test_deepseek_v3_server_mode_code_scope_stdout(capsys, monkeypatch):
         mock_post.return_value = DummyResponse(fake_json)
 
         args = [
-            "--prompt", fake_prompt,
-            "--scope", "code",
-            "--submission", str(parent / "test_submissions/ggr274_homework5/test1/student_submission.ipynb"),
-            "--solution", str(parent / "test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb"),
-            "--model", "deepSeek-v3",
-            "--llama_mode", "server",
+            "--prompt",
+            fake_prompt,
+            "--scope",
+            "code",
+            "--submission",
+            str(parent / "test_submissions/ggr274_homework5/test1/student_submission.ipynb"),
+            "--solution",
+            str(parent / "test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb"),
+            "--model",
+            "deepSeek-v3",
+            "--llama_mode",
+            "server",
         ]
         output = run_cli_and_capture(args, capsys)
 

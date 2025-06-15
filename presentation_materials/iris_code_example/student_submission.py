@@ -1,8 +1,8 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+from sklearn.datasets import load_iris
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_iris
 
 iris = load_iris()
 df = pd.DataFrame(iris.data, columns=iris.feature_names)
@@ -10,9 +10,7 @@ df = pd.DataFrame(iris.data, columns=iris.feature_names)
 # Create a binary target variable by selecting only two species (Setosa and Versicolor)
 df["species"] = iris.target
 df = df[df["species"] != 2]  # Remove the Virginica species (category 2)
-df["species"] = df["species"].apply(
-    lambda x: 1 if x == 1 else 0
-)  # Setosa = 0, Versicolor = 1
+df["species"] = df["species"].apply(lambda x: 1 if x == 1 else 0)  # Setosa = 0, Versicolor = 1
 
 
 def calculate_statistics(df):

@@ -13,7 +13,7 @@ To submit your work:
 2. Submit this file to MarkUs under the **hw5** assignment. (See [our MarkUs Guide](../../../guides/markus_guide.ipynb) for detailed instructions.)
 All homeworks will take place in a Jupyter notebook (like this one). When you are done, you will download this notebook and submit it to MarkUs.
 
-In this homework we explore: 
+In this homework we explore:
 - row, column selection
 - create new columns
 - grouping
@@ -54,15 +54,15 @@ Old name | New name
 `dur47`  |`Exercising time`
 `sleepdur`| `Sleep time`
 `agegr10`|`Age group`
-`prv`    |`Province` 
+`prv`    |`Province`
 
 Step 1: Create a dictionary called `new_col_names` with each *Old name* as a key and each *New name* as the corresponding value.
 
 Code Cell:
 new_col_names = {
-    'dur41': 'Socializing time', 
-    'dur47': 'Exercising time', 
-    'sleepdur': 'Sleep time', 
+    'dur41': 'Socializing time',
+    'dur47': 'Exercising time',
+    'sleepdur': 'Sleep time',
     'agegr10': 'Age group',
     'prv': 'Province'
 }
@@ -83,12 +83,12 @@ Markdown Cell:
 
 Create columns in `time_use_subset_renamed_df` that converts time use from minutes to hours.  Since 60 minutes is equal to 1 hour we can divide the time use columns by 60 to compute the time in hours.
 
-To do this create new columns in `time_use_subset_renamed_df` called 
+To do this create new columns in `time_use_subset_renamed_df` called
 
-  + `Socializing time (hour)`, 
-  + `Exercising time (hour)`, and 
-  + `Sleep time (hour)` 
-  
+  + `Socializing time (hour)`,
+  + `Exercising time (hour)`, and
+  + `Sleep time (hour)`
+
 these columns are (respectively) `Socializing time`, `Exercising time`, and `Sleep time` in hours.
 
 Code Cell:
@@ -109,8 +109,8 @@ a) Create a boolean Series called `well_balanced` that is `True` if time spent e
 
 Code Cell:
 well_balanced = (
-    (time_use_subset_renamed_df['Sleep time (hour)'] > 0) & 
-    (time_use_subset_renamed_df['Exercising time (hour)'] > 0) & 
+    (time_use_subset_renamed_df['Sleep time (hour)'] > 0) &
+    (time_use_subset_renamed_df['Exercising time (hour)'] > 0) &
     (time_use_subset_renamed_df['Socializing time (hour)'] > 0)
 )
 
@@ -147,9 +147,9 @@ a) Compute the mean hours spent sleeping, socializing, and exercising by age gro
 
 b) Create a new column in `group_means` called `Total time (hour)` that is the sum of the time (in hours) spent sleeping, exercising, and socializing.
 
-c) Create a new index for `group_means` using the labels of Age group found in the code book (`gss_tu2016_codebook.txt`) and store the values in a list called `index_new`. 
+c) Create a new index for `group_means` using the labels of Age group found in the code book (`gss_tu2016_codebook.txt`) and store the values in a list called `index_new`.
 
-d) Change the index of `group_means` to correspond to `index_new`. 
+d) Change the index of `group_means` to correspond to `index_new`.
 
 Code Cell:
 group_means = well_balanced_df.groupby('Age group')[['Socializing time (hour)', 'Exercising time (hour)','Sleep time (hour)']].mean()
@@ -224,7 +224,7 @@ c) State one limitations of basing this data analysis on only respondents that s
 
 Markdown Cell:
 
-a) 
+a)
 - yes the rankings change for the total if the mean or median is used.
 - if the median is used then the rankings are: 15-24, 25-34, 75+ ,...
 - if the mean is used then the rankings are: 15-25, 75+, 55-64, ...
@@ -236,5 +236,3 @@ b) the length of the boxplot is longest for 15-24 age group.
 c) 96% of the data is excluded so results might be different if these observations are included.
 
 ##
-
-

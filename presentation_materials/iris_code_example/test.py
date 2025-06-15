@@ -1,18 +1,17 @@
-import pytest
-import pandas as pd
 import numpy as np
-from sklearn.datasets import load_iris
-from student_submission import (
-    calculate_statistics,
-    classify_single_species,
-)  # Student's implementation
+import pandas as pd
+import pytest
 from instructor_solution import (
-    calculate_statistics as instructor_calculate_statistics,
-    classify_single_species as instructor_classify_species,
-)  # Instructor's implementation
+    calculate_statistics as instructor_calculate_statistics,  # Instructor's implementation
+)
+from instructor_solution import classify_single_species as instructor_classify_species
 
 # Load the Iris dataset
 from sklearn.datasets import load_iris
+from student_submission import (  # Student's implementation
+    calculate_statistics,
+    classify_single_species,
+)
 
 # Load the Iris dataset
 iris = load_iris()
@@ -21,9 +20,7 @@ df = pd.DataFrame(iris.data, columns=iris.feature_names)
 # Create a binary target variable by selecting only two species (Setosa and Versicolor)
 df["species"] = iris.target
 df = df[df["species"] != 2]  # Remove the Virginica species (category 2)
-df["species"] = df["species"].apply(
-    lambda x: 1 if x == 1 else 0
-)  # Setosa = 0, Versicolor = 1
+df["species"] = df["species"].apply(lambda x: 1 if x == 1 else 0)  # Setosa = 0, Versicolor = 1
 
 
 # Test sepal_length_mean
@@ -116,9 +113,7 @@ def test_sepal_width_var():
 
 # Test predictions for a single data point (edge case for individual prediction)
 def test_single_prediction_1():
-    single_sample = df.iloc[
-        0:1, :-1
-    ]  # Select just the features (excluding the species label)
+    single_sample = df.iloc[0:1, :-1]  # Select just the features (excluding the species label)
 
     # Student's and instructor's predictions for the single sample
     student_single_prediction = classify_single_species(single_sample)
@@ -129,9 +124,7 @@ def test_single_prediction_1():
 
 
 def test_single_prediction_2():
-    single_sample = df.iloc[
-        5:6, :-1
-    ]  # Select just the features (excluding the species label)
+    single_sample = df.iloc[5:6, :-1]  # Select just the features (excluding the species label)
 
     # Student's and instructor's predictions for the single sample
     student_single_prediction = classify_single_species(single_sample)
@@ -142,9 +135,7 @@ def test_single_prediction_2():
 
 
 def test_single_prediction_3():
-    single_sample = df.iloc[
-        6:7, :-1
-    ]  # Select just the features (excluding the species label)
+    single_sample = df.iloc[6:7, :-1]  # Select just the features (excluding the species label)
 
     # Student's and instructor's predictions for the single sample
     student_single_prediction = classify_single_species(single_sample)

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from tests.test_helper import run_cli_and_capture, mock_and_capture
+from tests.test_helper import mock_and_capture, run_cli_and_capture
 
 
 def test_ggr274_question1_deepseek_markdown(capsys, mock_and_capture):
@@ -14,11 +14,16 @@ def test_ggr274_question1_deepseek_markdown(capsys, mock_and_capture):
     parent = Path(__file__).parent.parent.parent
 
     args = [
-        "--prompt", "code_table",
-        "--scope", "code",
-        "--submission", str(parent / "test_submissions/ggr274_homework5/test1/student_submission.ipynb"),
-        "--question", "1",
-        "--model", "deepSeek-R1:70B",
+        "--prompt",
+        "code_table",
+        "--scope",
+        "code",
+        "--submission",
+        str(parent / "test_submissions/ggr274_homework5/test1/student_submission.ipynb"),
+        "--question",
+        "1",
+        "--model",
+        "deepSeek-R1:70B",
     ]
     output = run_cli_and_capture(args, capsys)
     assert "Compare the student's code and solution code" in output

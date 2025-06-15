@@ -8,7 +8,7 @@ TEST_OUTPUT_FILE="test_output1.txt"
 # Step 1: Run test_hw5.py to get test errors file
 # Note: name as test_output1.txt, since CSV file is too large to load tests will all fail
 TEST_OUTPUT=$(/home/docker/.autotesting/scripts/defaultvenv/bin/pytest "$TEST_SCRIPT" 2>&1 | tee "$TEST_OUTPUT_FILE")
-TEST_STATUS=${PIPESTATUS[0]} 
+TEST_STATUS=${PIPESTATUS[0]}
 
 if [ $TEST_STATUS -eq 0 ]; then
   STATUS="pass"
