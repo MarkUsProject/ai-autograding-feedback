@@ -28,6 +28,12 @@ dependencies = [
     "PyPDF2",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest",
+]
+
 [project.scripts]
 cli-name = "ai_feedback.__main__:main"
 
@@ -39,8 +45,15 @@ Issues = "https://github.com/MarkUsProject/ai-autograding-feedback/issues"
 requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+
 [tool.hatch.build]
 include = [
     "/ai_feedback/**/*.py",
     "/ai_feedback/data",
 ]
+
+[tool.isort]
+profile = "black"
