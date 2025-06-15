@@ -26,6 +26,7 @@ dependencies = [
     "ollama",
     "pillow",
     "PyPDF2",
+    "requests",
 ]
 
 [project.optional-dependencies]
@@ -57,3 +58,8 @@ include = [
 
 [tool.isort]
 profile = "black"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]

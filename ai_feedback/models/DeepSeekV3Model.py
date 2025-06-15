@@ -10,9 +10,9 @@ from dotenv import load_dotenv
 from .Model import Model
 
 load_dotenv()
-LLAMA_MODEL_PATH = os.getenv('LLAMA_MODEL_PATH')
-LLAMA_CLI_PATH = os.getenv('LLAMA_CLI_PATH')
-LLAMA_SERVER_URL = os.getenv("LLAMA_SERVER_URL").strip()
+LLAMA_MODEL_PATH = os.getenv('LLAMA_MODEL_PATH', '')
+LLAMA_CLI_PATH = os.getenv('LLAMA_CLI_PATH', '')
+LLAMA_SERVER_URL = os.getenv('LLAMA_SERVER_URL', '').strip()
 LLAMA_SERVER_URL = LLAMA_SERVER_URL if LLAMA_SERVER_URL and ":" in LLAMA_SERVER_URL else None
 GPU_LAYERS = "40"
 
