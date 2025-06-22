@@ -1,11 +1,10 @@
-import json
 import os
 import re
 import sys
-import urllib.request
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
+import requests
 from dotenv import load_dotenv
 
 from .Model import Model
@@ -39,6 +38,7 @@ class RemoteModel(Model):
         test_output: Optional[Path] = None,
         scope: Optional[str] = None,
         llama_mode: Optional[str] = None,
+        submission_image: Optional[str] = None,
     ) -> Optional[Tuple[str, str]]:
         """
         Generate a model response using the prompt and assignment files.
@@ -52,6 +52,7 @@ class RemoteModel(Model):
             scope (Optional[str]): The scope to use for generating the response.
             system_instructions (str): instructions for the model
             llama_mode (Optional[str]): Optional mode to invoke llama.cpp in.
+            submission_image (Optional[str]): An optional path to a submission image file.
 
         Returns:
             Optional[Tuple[str, str]]: A tuple containing the prompt and the model's response,
@@ -59,17 +60,13 @@ class RemoteModel(Model):
         """
         load_dotenv()
 
-        headers = {"X-API-KEY": os.getenv("REMOTE_API_KEY"), "Content-Type": "application/json"}
+        headers = {"X-API-KEY": os.getenv("REMOTE_API_KEY")}
         data = {"content": prompt, "model": self.model_name, "system_instructions": system_instructions}
+        files = {}
+        if submission_image:
+            filename = os.path.basename(submission_image)
+            files[filename] = (filename, open(submission_image, 'rb'))
 
-        # Convert the data to JSON format
-        json_data = json.dumps(data).encode("utf-8")
+        response = requests.post(self.remote_url, data=data, headers=headers, files=files)
 
-        # Create the request
-        request = urllib.request.Request(self.remote_url, data=json_data, headers=headers, method="POST")
-
-        # Send the request and get the response
-        with urllib.request.urlopen(request) as response:
-            response = json.loads(response.read().decode())
-
-        return request, response
+        return prompt, response.json()

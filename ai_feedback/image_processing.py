@@ -11,6 +11,7 @@ from .helpers.arg_options import Models
 from .helpers.image_extractor import extract_images
 from .helpers.image_reader import *
 from .helpers.template_utils import render_prompt_template
+from .models.RemoteModel import RemoteModel
 
 
 def encode_image(image_path: os.PathLike) -> bytes:
@@ -86,7 +87,7 @@ def anthropic_call(message: Message, model: str) -> str | None:
     return message.content[0].text
 
 
-def process_image(args, prompt: dict) -> tuple[str, str]:
+def process_image(args, prompt: dict, system_instructions: str) -> tuple[str, str]:
     """Generates feedback for an image submission.
     Returns the LLM prompt delivered and the returned response."""
     OUTPUT_DIRECTORY = "output_images"
@@ -152,6 +153,20 @@ def process_image(args, prompt: dict) -> tuple[str, str]:
             responses.append(openai_call(message, model="gpt-4o"))
         elif args.model == Models.CLAUDE.value:
             responses.append(anthropic_call(message, model="claude-3-7-sonnet-20250219"))
+        elif args.model == Models.REMOTE.value:
+            if args.remote_model:
+                model = RemoteModel(model_name=args.remote_model)
+            else:
+                model = RemoteModel()
+
+            _request, response = model.generate_response(
+                rendered_prompt,
+                args.submission,
+                system_instructions=system_instructions,
+                question_num=question,
+                submission_image=args.submission_image,
+            )
+            responses.append(str(response))
         else:
             responses.append(chat(model=args.model, messages=[message], options={"temperature": 0.33}).message.content)
 
