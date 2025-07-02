@@ -25,6 +25,7 @@ We consider two cases:
 
 Thus, $A$ fits $k$ compatible intervals, matching $O$. So $A$ is optimal.
 ```
+## Issues Identified
 
 - Clearly structured.
 - Justifies steps with finish-time comparisons.

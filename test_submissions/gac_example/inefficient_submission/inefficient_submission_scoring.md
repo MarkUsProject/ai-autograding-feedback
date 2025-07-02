@@ -29,6 +29,7 @@ def gac_enforce(csp, queue=None):
                             queue.append((c2, v))
     return True, pruned
 ```
+## Issues Identified
 
 - Uses a `seen` set that may prevent necessary revisits.
 - Slightly non-standard queue logic could cause missed pruning.

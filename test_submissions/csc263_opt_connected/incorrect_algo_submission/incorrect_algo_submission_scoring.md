@@ -15,8 +15,10 @@ def is_connected(graph):
     dfs(0)
     return len(visited) == len(graph)
 ```
+## Issues Identified
 
-While it correctly checks connectivity, it does not follow the instructions to use BFS.
+- While it correctly checks connectivity, it does not follow the instructions to use BFS.
+
 ### Expected AI Response
 
 - Note that the submission uses DFS instead of BFS, which violates the question's requirements.

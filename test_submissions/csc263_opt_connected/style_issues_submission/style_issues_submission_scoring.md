@@ -27,7 +27,8 @@ def is_connected(graph):
     return True
 ```
 
-The solution:
+## Issues Identified
+
 - Uses a dictionary instead of a boolean list for `visited`.
 - Contains verbose conditionals like `== False`.
 

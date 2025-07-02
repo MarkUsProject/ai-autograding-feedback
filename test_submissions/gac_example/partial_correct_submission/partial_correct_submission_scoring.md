@@ -18,6 +18,7 @@ def gac_enforce(csp, queue=None):
                 pruned.append((var, val))
     return True, pruned
 ```
+## Issues Identified
 
 - Performs pruning, but pruned values don’t trigger updates to related arcs.
 - No failure handling for empty domains.

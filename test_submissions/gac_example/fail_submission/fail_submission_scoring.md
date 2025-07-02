@@ -13,6 +13,7 @@ def gac_enforce(csp, queue=None):
                     csp.prune_value(var, val)
     return True, []
 ```
+## Issues Identified
 
 - There is no queue or arc processing logic.
 - No handling of downstream effects when pruning changes domains.

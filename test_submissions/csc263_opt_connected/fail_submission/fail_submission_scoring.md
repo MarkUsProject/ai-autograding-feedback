@@ -11,8 +11,9 @@ def is_connected(graph):
             return False
     return True
 ```
+## Issues Identified
 
-This does not traverse the graph or check if all nodes are reachable from a source. It would incorrectly return `True` for disconnected graphs where all nodes have at least one edge.
+- This does not traverse the graph or check if all nodes are reachable from a source. It would incorrectly return `True` for disconnected graphs where all nodes have at least one edge.
 
 ### Expected AI Response
 

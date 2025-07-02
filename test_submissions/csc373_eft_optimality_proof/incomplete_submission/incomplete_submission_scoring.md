@@ -13,6 +13,7 @@ So every interval in $A$ finishes before or at the same time as the correspondin
 
 Therefore, the greedy algorithm is optimal.
 ```
+## Issues Identified
 
 - Assumes a one-to-one correspondence between $A$ and $O$ without justification.
 - Fails to show that greedy's early finishes actually allow inclusion of $k$ intervals.

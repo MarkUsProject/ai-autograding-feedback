@@ -11,6 +11,7 @@ It sorts by finish time, and always chooses the earliest one, which is the most 
 
 Therefore, it is optimal.
 ```
+## Issues Identified
 
 - No definition of optimality or contradiction.
 - Assumes what it is trying to prove.
