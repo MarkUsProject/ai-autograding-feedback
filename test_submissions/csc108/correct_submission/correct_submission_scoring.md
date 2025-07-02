@@ -51,7 +51,7 @@ def fizzbuzz(n: int) -> list:
 The AI should identify and praise:
 
 - **Correct implementation**: Acknowledge perfect FizzBuzz algorithm
-- **Excellent documentation**: Praise comprehensive docstring 
+- **Excellent documentation**: Praise comprehensive docstring
 - **Professional naming**: Recognize descriptive variable names
 - **Optimal structure**: Commend efficient conditional logic
 - **Style excellence**: Note perfect PEP 8 compliance
@@ -59,5 +59,5 @@ The AI should identify and praise:
 ## Scoring Rubric
 
 - **Correctness: 100/100** - Perfect implementation
-- **Style: 100/100** - Exemplary code quality  
+- **Style: 100/100** - Exemplary code quality
 - **Overall Grade: A+ (100%)**

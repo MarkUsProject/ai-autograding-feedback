@@ -18,4 +18,4 @@ def fizzbuzz(n: int) -> list:
             result.append('Buzz')
         else:
             result.append(i)
-    return result 
+    return result

@@ -41,4 +41,4 @@ scenarios:
 
       - description: "STA130 style issue"
         vars:
-          submission_file: test_submissions/sta130/style_submission/style_submission.ipynb 
+          submission_file: test_submissions/sta130/style_submission/style_submission.ipynb

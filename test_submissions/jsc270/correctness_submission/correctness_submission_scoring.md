@@ -49,4 +49,3 @@ The AI should identify and address:
 - **Correctness: 70/100** - Creates proper boxplot but missing one required column
 - **Style: 90/100** - Good formatting, comments, and structure
 - **Overall Grade: C+ (75%)**
- 

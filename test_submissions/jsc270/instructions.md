@@ -10,7 +10,7 @@ All homeworks will take place in a Jupyter notebook (like this one). When you ar
 
 ## Introduction
 
-In this homework we explore: 
+In this homework we explore:
 - row, column selection
 - create new columns
 - grouping

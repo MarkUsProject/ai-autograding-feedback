@@ -26,3 +26,5 @@ This student offers a clear, well-structured, and thoroughly justified argument,
 - Cites the facial recognition example and concrete strategies (opt-in, anonymization, impact assessments).
 - Identifies common counterarguments and provides a rebuttal grounded in ethical theory.
 - Acknowledges the clear introduction, body with subpoints, and concise conclusion.
+
+---

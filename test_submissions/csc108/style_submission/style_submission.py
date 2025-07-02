@@ -17,4 +17,3 @@ def f(n):
             output += 'Buzz'
         result.append(output or i)
     return result
- 
