@@ -87,6 +87,7 @@ defaultTest:
     model: deepSeek-R1:70B
     scope: code
     submission_type: python
+    system_prompt: code_feedback_v3
 ```
 
 * **`defaultTest.vars`** defines default variables for all tests in the file.
@@ -94,6 +95,7 @@ defaultTest:
   * `model`: The model being tested.
   * `scope`: Type of task (`code`, `text`, etc.).
   * `submission_type`: Language or file type being evaluated.
+  * `system_prompt`: Optional system prompt to provide context to the model.
 
 ---
 
@@ -105,12 +107,14 @@ scenarios:
 
 * **`scenarios`** define variations of tests under a shared configuration.
 * Each `config.vars.prompt` refers to the prompt template ID used for this scenario (e.g., `code_feedback_r1`).
+* Optionally, you can specify a `system_prompt` to provide additional context to the model.
 
 ---
 
 ```yaml
     tests:
-      - vars:
+      - description: "CSC263 correct submission"
+        vars:
           submission_file: test_submissions/csc263_opt_connected/correct_submission/correct_submission.py
           solution_file:   test_submissions/csc263_opt_connected/solution.py
 ```
@@ -120,6 +124,7 @@ scenarios:
 
   * `submission_file`: The student submission being graded.
   * `solution_file`: The instructor reference solution (used for comparison but never shown to the model).
+  * `description`: Optional human-readable label for the test case.
 
 You can define multiple tests under one scenario. The prompt will run on each `submission_file`, and the test runner can score the result based on differences from the `solution_file`.
 
