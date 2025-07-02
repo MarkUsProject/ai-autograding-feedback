@@ -12,3 +12,5 @@ This student offers a moderately reasoned view that public data can be used for 
 * Highlight that the answer justifies thesis by stating importance of privacy concerns when it comes to scraping data
 * Mention that while acknowledges risks does not justify why their points still stands
 * Encourage the student to acknowledge and address counter-arguments to strengthen critical analysis.
+
+---
