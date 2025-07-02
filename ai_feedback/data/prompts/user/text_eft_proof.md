@@ -1,4 +1,3 @@
-
 GRADING TASK
 • Read the student’s proof that the Earliest-Finish-Time (EFT) greedy algorithm is optimal.
 • Privately compare it with the reference solution (visible to you but **never to the student**).
