@@ -197,6 +197,19 @@ Models:
 
 - When the `--output` argument is not given, the prompt used and generated response will be sent to stdout in the format selected by `--output_template`.
 - When the `--output_template` argument is not given it will default to `response_only` which is only the response from the model
+
+## Question Extraction
+
+Use `--question "<section name>"` to extract a specific section from a submission. Behavior depends on file type.
+
+### Supported inputs
+- PDF: looks up section names in the PDF’s Table of Contents (TOC).
+
+- Text / Markdown / Code (.txt, .md, .ipynb, .qmd):  looks for Markdown-style headings (#, ##, ###, …).
+For code, write the heading in a comment line (e.g., ### Question 1 in Python). The extractor returns all content that belongs to that heading (up until the next heading at the same or higher level).
+
+Matching is case-insensitive and normalizes smart quotes, dashes, and extra whitespace.
+
 ## Test Files
 - Any subdirectory of /test_submissions can be run locally. More examples can be added to this directory using a similar fashion.
 
