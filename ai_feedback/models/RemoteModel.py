@@ -23,7 +23,7 @@ class RemoteModel(Model):
     def __init__(
         self,
         remote_url: str = "http://polymouth.teach.cs.toronto.edu:5000/chat",
-        model_name: str = "deepseek-coder-v2:latest",
+        model_name: str = "gpt-oss:120b",
     ) -> None:
         """Initializes the remote model with a remote URL and model name."""
         self.remote_url = remote_url
