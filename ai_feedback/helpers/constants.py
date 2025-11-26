@@ -8,7 +8,7 @@ HELP_MESSAGES = {
     "solution": "The file path for the solution file.",
     "question": "The specific question number to analyze within the assignment (if applicable).",
     "model": "The name of the LLM model to use for evaluation.",
-    "remote_model": "When using --remote=model, this option specifies the remote model to use.",
+    "model_name": "When using --remote=model, this option specifies the remote model to use.",
     "output": "Format to display the output response.",
     "llama_mode": "Specifies how to invoke llama.cpp: either directly via its command‐line interface (CLI) or by sending requests to a running llama-server instance.",
     "test_output": "The output of tests from evaluating the assignment.",

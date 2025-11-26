@@ -199,10 +199,10 @@ def main() -> int:
         help=HELP_MESSAGES["model"],
     )
     parser.add_argument(
-        "--remote_model",
+        "--model_name",
         type=str,
         required=False,
-        help=HELP_MESSAGES["remote_model"],
+        help=HELP_MESSAGES["model_name"],
     )
     parser.add_argument(
         "--output",
