@@ -164,8 +164,8 @@ def process_image(
         elif args.model == Models.CLAUDE.value:
             responses.append(anthropic_call(message, model="claude-3-7-sonnet-20250219"))
         elif args.model == Models.REMOTE.value:
-            if args.remote_model:
-                model = RemoteModel(model_name=args.remote_model)
+            if args.model_name:
+                model = RemoteModel(model_name=args.model_name)
             else:
                 model = RemoteModel()
 

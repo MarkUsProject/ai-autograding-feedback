@@ -9,10 +9,12 @@ python -m ai_feedback \
 --submission_type jupyter \
 --prompt code_explanation \
 --scope code \
---assignment presentation_materials/iris_image_examples/image_test_incorrect \
+--submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
 --question "4" \
---model claude-3.7-sonnet \
+--model deepSeek-R1:70B \
+--model_options max_tokens=20000 \
 --output stdout
+
 ```
 
 # Example Response

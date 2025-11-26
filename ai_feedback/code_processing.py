@@ -70,8 +70,8 @@ def process_code(
 
     if args.model in model_mapping:
         model_class = model_mapping[args.model]
-        if model_class.__name__ == 'RemoteModel' and args.remote_model:
-            model = model_class(model_name=args.remote_model)
+        if model_class.__name__ == 'RemoteModel' and args.model_name:
+            model = model_class(model_name=args.model_name)
         else:
             model = model_class()
     else:

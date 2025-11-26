@@ -1,0 +1,13 @@
+Let me review your submission and provide feedback on any errors I found:
+
+1. **Error in Boxplot Implementation**:
+- **Line 50**: `by='species'`
+- **Why it's an error**: The boxplots are using numerical species codes (0,1,2) instead of the actual species names for labeling. This makes the plot less informative since viewers won't know which number corresponds to which species.
+- **Guidance**: Instead of using the numerical `species` column, use the `species name` column you created earlier to make the boxplot labels more descriptive and meaningful.
+
+2. **Error in Species Mapping**:
+- **Line 38**: `df['species name'] = iris.target_names[df['species']]`
+- **Why it's an error**: While this line creates a mapping from species numbers to names, it's not being utilized properly in the boxplot implementation (as noted above). This leaves the final visualization unclear.
+- **Guidance**: Ensure that any visualizations using `species` information use the `species name` column instead of the numerical codes for better readability.
+
+These changes will make your code more robust and your visualizations clearer. Keep up the good work!
