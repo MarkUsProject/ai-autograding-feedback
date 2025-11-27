@@ -1,5 +1,6 @@
 from typing import Any, Tuple
-from ollama import chat, Message
+
+from ollama import Message, chat
 
 """
 Parent Class for LLMs.

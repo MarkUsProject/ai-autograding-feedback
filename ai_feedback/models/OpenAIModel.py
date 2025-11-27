@@ -1,18 +1,18 @@
 import json
 import os
 from pathlib import Path
-from ollama import Message
 from typing import Optional, Tuple
-from ..helpers.image_extractor import encode_image
 
 import openai
 from dotenv import load_dotenv
+from ollama import Message
 
 from ai_feedback.helpers.model_options_helpers import (
     cast_to_type,
     openai_chat_option_schema,
 )
 
+from ..helpers.image_extractor import encode_image
 from .Model import Model
 
 load_dotenv()
