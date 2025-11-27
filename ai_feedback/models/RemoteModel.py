@@ -1,11 +1,10 @@
 import json
 import os
-import re
-import sys
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import requests
+from ollama import Message
 from dotenv import load_dotenv
 
 from .Model import Model
@@ -26,6 +25,7 @@ class RemoteModel(Model):
         model_name: str = "gpt-oss:120b",
     ) -> None:
         """Initializes the remote model with a remote URL and model name."""
+        super().__init__(model_name)
         self.remote_url = remote_url
         self.model_name = model_name
 
@@ -92,3 +92,15 @@ class RemoteModel(Model):
         response = requests.post(self.remote_url, data=data, headers=headers, files=files)
 
         return prompt, response.json()
+
+    def process_image(self, message: Message, args: Any) -> str:
+        _request, response = self.generate_response(
+            args.rendered_prompt,
+            args.submission,
+            system_instructions=args.system_instructions,
+            question=args.question,
+            submission_image=args.submission_image,
+            json_schema=args.json_schema,
+            model_options=args.model_options,
+        )
+        return str(response)

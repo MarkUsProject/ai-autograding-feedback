@@ -1,4 +1,5 @@
 from typing import Any, Tuple
+from ollama import chat, Message
 
 """
 Parent Class for LLMs.
@@ -10,11 +11,11 @@ their own model-specific logic.
 
 
 class Model:
-    def __init__(self):
+    def __init__(self, model_name: str = None):
         """
         Initialize the model.
         """
-        pass
+        self.model_name = model_name
 
     def generate_response(self, prompt: str, **kwargs: Any) -> Tuple[str, str]:
         """
@@ -37,3 +38,16 @@ class Model:
             NotImplementedError: If the method is not implemented by the subclass.
         """
         raise NotImplementedError("Subclasses must implement the `generate_response` method.")
+
+    def process_image(self, message: Message, args) -> str | None:
+        """
+        Process an image-based request and generate a response.
+
+        Args:
+            message: The message containing the prompt and images
+            args: Command-line arguments containing model configuration
+
+        Returns:
+            str | None: The model's response or None if processing fails
+        """
+        return chat(model=self.model_name, messages=[message], options={"temperature": 0.33}).message.content

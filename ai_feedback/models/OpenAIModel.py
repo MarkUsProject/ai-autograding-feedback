@@ -1,8 +1,9 @@
 import json
 import os
-import re
 from pathlib import Path
+from ollama import Message
 from typing import Optional, Tuple
+from ..helpers.image_extractor import encode_image
 
 import openai
 from dotenv import load_dotenv
@@ -18,13 +19,14 @@ load_dotenv()
 
 
 class OpenAIModel(Model):
-    def __init__(self) -> None:
+    def __init__(self, model_name: str = None) -> None:
         """
         Initialize an OpenAIModel instance.
 
         Loads the OpenAI API key from environment variables and prepares the client.
         """
-        super().__init__()
+        super().__init__(model_name)
+        self.model_name = model_name if model_name else "gpt-4o"
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     def generate_response(
@@ -70,6 +72,34 @@ class OpenAIModel(Model):
         response = self._call_openai(prompt, system_instructions, model_options, schema)
         return prompt, response
 
+    def process_image(self, message: Message, args) -> str:
+        """Sends a request to OpenAI"""
+
+        images = [
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{encode_image(image.value)}"},
+            }
+            for image in message.images
+        ]
+        completion = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": message.content,
+                        }
+                    ]
+                    + images,
+                }
+            ],
+            temperature=0.33,
+        )
+        return completion.choices[0].message.content
+
     def _call_openai(
         self, prompt: str, system_instructions: str, model_options: Optional[dict] = None, schema: Optional[dict] = None
     ) -> str:
@@ -91,7 +121,7 @@ class OpenAIModel(Model):
         model_options = cast_to_type(openai_chat_option_schema, model_options)
 
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=self.model_name,
             messages=[
                 {"role": "system", "content": system_instructions},
                 {"role": "user", "content": prompt},

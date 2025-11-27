@@ -8,6 +8,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
+def encode_image(image_path: os.PathLike) -> bytes:
+    """Encodes the image found at {image_path} to a base64 string"""
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+
 def extract_images(input_notebook_path: os.PathLike, output_directory: os.PathLike, output_name: str) -> List[Path]:
     image_paths = []
     with open(input_notebook_path, "r") as file:
