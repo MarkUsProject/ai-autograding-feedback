@@ -11,7 +11,8 @@ python -m ai_feedback \
 --scope code \
 --submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
 --question "4" \
---model deepSeek-R1:70B \
+--provider deepseek \
+--model_name deepSeek-R1:70B \
 --model_options max_tokens=20000 \
 --output stdout
 
