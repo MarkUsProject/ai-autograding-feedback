@@ -1,9 +1,9 @@
 # Use Venv
 ```sh
-source ai-autograding-feedback/LlmVenv/bin/activate
+source venv/bin/activate
 ```
 
-# Analyze code correctness using Claude
+# Analyze code correctness using DeepSeek
 ```sh
 python -m ai_feedback \
 --submission_type jupyter \
@@ -12,40 +12,25 @@ python -m ai_feedback \
 --submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
 --question "4" \
 --provider deepseek \
---model_name deepSeek-R1:70B \
---model_options max_tokens=20000 \
---output stdout
+--model_name "deepSeek-R1:70b" \
+--model_options max_tokens=5000
 
 ```
 
 # Example Response
-## Feedback for Task 4
+Let me identify some mistakes in your submission and explain why they occur:
 
-## Mistake in part a:
-```python
-df['species name'] = iris.target_names[df['species']]
-```
+1. **Line 25:** `df['species'] = iris.target`
+   - **Why it's a mistake:** The `iris.target` array contains numerical values (0, 1, 2) representing species, but these numbers are not informative without context. This makes the data harder to interpret for someone unfamiliar with the dataset.
+   - **Guidance:** Instead of directly assigning numerical values, you should map these values to their corresponding species names using `iris.target_names` first.
 
-This line contains an error because you're trying to use a Series (`df['species']`) as an index for the `iris.target_names` array. You can't directly index a NumPy array with a Series like this. When you try to use a Series to index into an array, Python expects each element of the Series to be a valid index for the array, but it tries to do this all at once rather than element by element.
+2. **Line 38:** `df['species name'] = iris.target_names[df['species']]`
+   - **Why it's a mistake:** This line is correct in itself, but it would work better if the `species` column contained meaningful categorical values (like "setosa", "versicolor") instead of numerical values (0, 1, 2). Currently, it maps numbers to names, which works but isn't as intuitive.
+   - **Guidance:** Consider modifying your earlier code to store species names directly in the `species` column and use this column for mapping.
 
-## Mistake in part b:
-```python
-boxplots_labelled = df.boxplot(
-    column=[
-        'sepal length (cm)',
-        'sepal width (cm)',
-        'petal length (cm)',
-        'petal width (cm)'],
-    by='species',
-    figsize=(10, 10)
-)
-```
-
-There are two issues with this code:
-1. You're using `by='species'` when the instructions specifically ask you to use the `'species name'` column for the boxplot grouping
-2. You're using `df` instead of `df_labelled` as specified in the instructions
-
-The boxplot should be grouped by the more informative `'species name'` column so that the x-axis labels show the actual species names rather than numeric codes.
+3. **Lines 44-52:** `df.boxplot(...)`
+   - **Why it's a mistake:** The `by='species'` parameter will create boxplots grouped by numerical values (0, 1, 2) because your `species` column contains numbers. This makes the plot less informative as the x-axis labels won't show the actual species names.
+   - **Guidance:** Use the `species name` column instead of `species` for grouping to make the boxplots more interpretable.
 
 # Analyze image correctness using OpenAI
 ```sh
@@ -53,11 +38,12 @@ python -m ai_feedback \
 --submission_type jupyter \
 --prompt image_analyze \
 --scope image \
---assignment presentation_materials/iris_image_examples/image_test_incorrect \
+--submission_image presentation_materials/iris_image_examples/image_test_incorrect/student_submission.png \
+--submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
 --question "4" \
---model openai \
---output stdout
+--provider openai
+
 ```
 
 # Example Response
-The graphs in the image do not fully solve the problem as specified. While they do show side-by-side boxplots for sepal lengths, sepal widths, petal lengths, and petal widths, the horizontal axis uses numerical labels (0, 1, 2) instead of the species names. The problem asks for the species names to be used, making the ticks on the horizontal axes informative.
+The graphs in the attached image do not fully solve the problem. While they do show side-by-side boxplots for sepal lengths, sepal widths, petal lengths, and petal widths, the x-axis labels use numeric codes (0, 1, 2) instead of the species names. The problem specifies that the ticks on the horizontal axes should be informative by using the species names.
