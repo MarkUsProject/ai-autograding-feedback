@@ -31,18 +31,19 @@ For the image scope, the program takes up to two files, depending on the prompt 
 | `--submission_type`  | Type of submission (from `arg_options.FileType`)                    | ❌ |
 | `--prompt`           | Pre-defined prompt name or file path to custom prompt file          | ❌ **|
 | `--prompt_text`      | String prompt                                                       | ❌ ** |
-| `--scope`            | Processing scope (`image` or `code` or `text`)                      | ✅ |
+| `--scope`            | Processing scope (from `arg_options.Scope`)                         | ✅ |
 | `--submission`       | Submission file path                                                | ✅ |
 | `--question`         | Specific question to evaluate                                       | ❌ |
-| `--model`            | Model type (from `arg_options.Models`)                              | ✅ |
+| `--provider`         | Model provider (available providers from `ModelFactory`)            | ✅ |
+| `--model_name`       | Specific model name to override provider's default model            | ❌ |
 | `--output`           | File path for where to record the output                            | ❌ |
 | `--solution`         | File path for the solution file                                     | ❌ |
 | `--test_output`      | File path for the file containing the results from tests            | ❌ |
 | `--submission_image` | File path for the submission image file                             | ❌ |
 | `--solution_image`   | File path for the solution image file                               | ❌ |
 | `--system_prompt`    | Pre-defined system prompt name or file path to custom system prompt | ❌ |
-| `--llama_mode`       | How to invoke deepSeek-v3 (choices in `arg_options.LlamaMode`)      | ❌ |
-| `--output_template`  | Output template file (from `arg_options.OutputTemplate)             | ❌ |
+| `--llama_mode`       | How to invoke llama.cpp (from `arg_options.LlamaMode`)              | ❌ |
+| `--output_template`  | Output template file (from `arg_options.OutputTemplate`)            | ❌ |
 | `--json_schema`      | File path to json file for schema for structured output             | ❌ |
 | `--marking_instructions` | File path to marking instructions/rubric                        | ❌ |
 | `--model_options`    | Comma-separated key-value pairs of model options and their values   | ❌ |
@@ -144,6 +145,38 @@ System prompts define the AI model's behavior, tone, and approach to providing f
 
 ## Marking Instructions
 The `--marking_instructions` argument accepts a file path to a text file containing rubric or marking instructions. If the prompt template contains a `{marking_instructions}` placeholder, the contents of the file will be inserted at that location in the prompt.
+
+## Providers and Models
+
+The `--provider` argument specifies which model provider to use. Each provider has a default model that will be used unless you override it with the `--model_name` argument.
+
+### Available Providers
+
+To see all available providers, run:
+```bash
+python -m ai_feedback --help
+```
+
+Current providers include:
+- `claude` - Uses Claude AI models (requires CLAUDE_API_KEY)
+- `codellama` - Uses CodeLlama via Ollama (default: `codellama:latest`)
+- `deepseek` - Uses DeepSeek models via Ollama (default: `deepseek-r1:70b`)
+- `openai` - Uses OpenAI models (requires OPENAI_API_KEY, default: `gpt-4o`)
+- `openai-vector` - Uses OpenAI with vector store functionality (requires OPENAI_API_KEY)
+- `remote` - Uses remote API server (default: `gpt-oss:120b`)
+
+### Using --model_name
+
+The `--model_name` argument allows you to override the provider's default model. For example:
+```bash
+# Use Claude provider with a specific model
+python -m ai_feedback --provider claude --model_name claude-3-opus-20240229 ...
+
+# Use DeepSeek provider with a specific Ollama model
+python -m ai_feedback --provider deepseek --model_name "deepSeek-R1:70b" ...
+```
+
+If `--model_name` is not specified, each provider will use its default model.
 
 ## Models
 The models used can be seen under the ai_feedback/models folder.
@@ -275,7 +308,8 @@ python -m ai_feedback \
   --submission_image <image_file_path> \
   --solution_image <image_file_path> \
   --question <question_number> \
-  --model <model_name> \
+  --provider <provider_name> \
+  --model_name <model_name> \
   --output <file_path_to> \
   --output_template <file_name> \
   --system_prompt <prompt_file_path> \
