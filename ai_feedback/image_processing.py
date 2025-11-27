@@ -5,15 +5,13 @@ from typing import Optional
 from ollama import Image, Message
 from PIL import Image as PILImage
 
-from .models import ModelFactory
-from .helpers.arg_options import Models
 from .helpers.image_extractor import extract_images, extract_qmd_python_images
 from .helpers.image_reader import *
 from .helpers.template_utils import render_prompt_template
 
 
 def process_image(
-    args, prompt: dict, system_instructions: str, marking_instructions: Optional[str] = None
+    model, args, prompt: dict, system_instructions: str, marking_instructions: Optional[str] = None
 ) -> tuple[str, str]:
     """Generates feedback for an image submission.
     Returns the LLM prompt delivered and the returned response."""
@@ -83,13 +81,6 @@ def process_image(
 
         # Prompt the LLM
         requests.append(f"{message.content}\n\n{[str(image.value) for image in message.images]}")
-
-        try:
-            model_args = {'model_name': args.model_name} if args.model_name else {}
-            model = ModelFactory.create(args.provider, **model_args)
-        except ValueError as e:
-            print(f"Error: {e}")
-            sys.exit(1)
 
         args.rendered_prompt = rendered_prompt
         args.system_instructions = system_instructions

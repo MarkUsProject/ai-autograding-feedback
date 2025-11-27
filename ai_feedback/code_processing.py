@@ -1,9 +1,7 @@
 import os
-import sys
 from pathlib import Path
 from typing import Callable, Optional, Tuple
 
-from .models import ModelFactory
 from .helpers.file_converter import rename_files
 from .helpers.template_utils import render_prompt_template
 
@@ -11,7 +9,7 @@ EXPECTED_SUFFIXES = ["_solution", "test_output", "_submission"]
 
 
 def process_code(
-    args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
+    model, args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
 ) -> Tuple[str, str]:
     """
     Processes assignment files and generates a response using the selected model.
@@ -67,13 +65,6 @@ def process_code(
         question_num=args.question,
         marking_instructions=marking_instructions,
     )
-
-    try:
-        model_args = {'model_name': args.model_name} if args.model_name else {}
-        model = ModelFactory.create(args.provider, **model_args)
-    except ValueError as e:
-        print(f"Error: {e}")
-        sys.exit(1)
 
     if args.scope == "code":
         if args.question:
