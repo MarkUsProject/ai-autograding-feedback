@@ -1,91 +1,15 @@
-import base64
+import sys
 from pathlib import Path
 from typing import Optional
 
-from anthropic import Anthropic
-from dotenv import load_dotenv
-from ollama import Image, Message, chat
-from openai import OpenAI
+from ollama import Image, Message
 from PIL import Image as PILImage
 
+from .models import ModelFactory
 from .helpers.arg_options import Models
 from .helpers.image_extractor import extract_images, extract_qmd_python_images
 from .helpers.image_reader import *
 from .helpers.template_utils import render_prompt_template
-from .models.RemoteModel import RemoteModel
-
-
-def encode_image(image_path: os.PathLike) -> bytes:
-    """Encodes the image found at {image_path} to a base64 string"""
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-
-def openai_call(message: Message, model: str) -> str | None:
-    """Sends a request to OpenAI"""
-    # Load environment variables from .env file
-    load_dotenv()
-    client = OpenAI()
-    images = [
-        {
-            "type": "image_url",
-            "image_url": {"url": f"data:image/png;base64,{encode_image(image.value)}"},
-        }
-        for image in message.images
-    ]
-    completion = client.chat.completions.create(
-        model=model,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": message.content,
-                    }
-                ]
-                + images,
-            }
-        ],
-        temperature=0.33,
-    )
-    return completion.choices[0].message.content
-
-
-def anthropic_call(message: Message, model: str) -> str | None:
-    """Sends a request to OpenAI"""
-    # Load environment variables from .env file
-    load_dotenv()
-    client = Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
-    images = [
-        {
-            "type": "image",
-            "source": {
-                "type": "base64",
-                "media_type": "image/png",
-                "data": f"{encode_image(image.value)}",
-            },
-        }
-        for image in message.images
-    ]
-    message = client.messages.create(
-        max_tokens=2048,
-        model=model,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": message.content,
-                    }
-                ]
-                + images,
-            }
-        ],
-        temperature=0.33,
-    )
-    return message.content[0].text
 
 
 def process_image(
@@ -159,27 +83,16 @@ def process_image(
 
         # Prompt the LLM
         requests.append(f"{message.content}\n\n{[str(image.value) for image in message.images]}")
-        if args.model == Models.OPENAI.value:
-            responses.append(openai_call(message, model="gpt-4o"))
-        elif args.model == Models.CLAUDE.value:
-            responses.append(anthropic_call(message, model="claude-3-7-sonnet-20250219"))
-        elif args.model == Models.REMOTE.value:
-            if args.model_name:
-                model = RemoteModel(model_name=args.model_name)
-            else:
-                model = RemoteModel()
 
-            _request, response = model.generate_response(
-                rendered_prompt,
-                args.submission,
-                system_instructions=system_instructions,
-                question=question,
-                submission_image=args.submission_image,
-                json_schema=args.json_schema,
-                model_options=args.model_options,
-            )
-            responses.append(str(response))
-        else:
-            responses.append(chat(model=args.model, messages=[message], options={"temperature": 0.33}).message.content)
+        try:
+            model_args = {'model_name': args.model_name} if args.model_name else {}
+            model = ModelFactory.create(args.provider, **model_args)
+        except ValueError as e:
+            print(f"Error: {e}")
+            sys.exit(1)
+
+        args.rendered_prompt = rendered_prompt
+        args.system_instructions = system_instructions
+        responses.append(model.process_image(message, args))
 
     return "\n\n---\n\n".join(requests), "\n\n---\n\n".join(responses)

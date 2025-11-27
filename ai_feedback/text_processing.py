@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from typing import Optional, Tuple
 
-from .helpers.arg_options import model_mapping
+from .models import ModelFactory
 from .helpers.template_utils import render_prompt_template
 
 
@@ -48,14 +48,11 @@ def process_text(
         marking_instructions=marking_instructions,
     )
 
-    if args.model in model_mapping:
-        model_class = model_mapping[args.model]
-        if model_class.__name__ == 'RemoteModel' and args.model_name:
-            model = model_class(model_name=args.model_name)
-        else:
-            model = model_class()
-    else:
-        print("Invalid model selected for text scope.")
+    try:
+        model_args = {'model_name': args.model_name} if args.model_name else {}
+        model = ModelFactory.create(args.provider, **model_args)
+    except ValueError as e:
+        print(f"Error: {e}")
         sys.exit(1)
 
     if args.question:
