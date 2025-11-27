@@ -4,7 +4,9 @@ from typing import Optional, Tuple
 
 import anthropic
 from dotenv import load_dotenv
+from ollama import Message
 
+from ..helpers.image_extractor import encode_image
 from ..helpers.model_options_helpers import cast_to_type, claude_option_schema
 from .Model import Model
 
@@ -13,11 +15,12 @@ load_dotenv()
 
 
 class ClaudeModel(Model):
-    def __init__(self) -> None:
+    def __init__(self, model_name: str = None) -> None:
         """
         Initializes the ClaudeModel with the Anthropic client using an API key.
         """
-        super().__init__()
+        super().__init__(model_name)
+        self.model_name = model_name if model_name else "claude-3-7-sonnet-20250219"
         self.client = anthropic.Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
 
     def generate_response(
@@ -62,7 +65,7 @@ class ClaudeModel(Model):
 
         # Construct request parameters
         request_kwargs = {
-            "model": "claude-3-7-sonnet-20250219",
+            "model": self.model_name,
             "system": system_instructions,
             "messages": [{"role": "user", "content": request}],
             **model_options,
@@ -75,3 +78,35 @@ class ClaudeModel(Model):
             return None
 
         return prompt, response.content[0].text
+
+    def process_image(self, message: Message, args) -> str:
+        """Sends a request to Claude"""
+        images = [
+            {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": "image/png",
+                    "data": f"{encode_image(image.value)}",
+                },
+            }
+            for image in message.images
+        ]
+        response = self.client.messages.create(
+            max_tokens=2048,
+            model=self.model_name,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": message.content,
+                        }
+                    ]
+                    + images,
+                }
+            ],
+            temperature=0.33,
+        )
+        return response.content[0].text

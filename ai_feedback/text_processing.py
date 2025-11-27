@@ -1,13 +1,11 @@
-import sys
 from pathlib import Path
 from typing import Optional, Tuple
 
-from .helpers.arg_options import model_mapping
 from .helpers.template_utils import render_prompt_template
 
 
 def process_text(
-    args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
+    model, args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
 ) -> Tuple[str, str]:
     """
     Processes text-based assignment files and generates a response using the selected model.
@@ -47,16 +45,6 @@ def process_text(
         question=args.question,
         marking_instructions=marking_instructions,
     )
-
-    if args.model in model_mapping:
-        model_class = model_mapping[args.model]
-        if model_class.__name__ == 'RemoteModel' and args.remote_model:
-            model = model_class(model_name=args.remote_model)
-        else:
-            model = model_class()
-    else:
-        print("Invalid model selected for text scope.")
-        sys.exit(1)
 
     if args.question:
         request, response = model.generate_response(

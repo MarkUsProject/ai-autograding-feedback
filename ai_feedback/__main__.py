@@ -1,5 +1,4 @@
 import argparse
-import json
 import os
 import os.path
 import sys
@@ -9,6 +8,7 @@ from pathlib import Path
 from . import code_processing, image_processing, text_processing
 from .helpers import arg_options
 from .helpers.constants import HELP_MESSAGES
+from .models import ModelFactory
 
 _TYPE_BY_EXTENSION = {
     '.c': 'C',
@@ -192,17 +192,17 @@ def main() -> int:
     parser.add_argument("--solution", type=str, required=False, default="", help=HELP_MESSAGES["solution"])
     parser.add_argument("--question", type=str, required=False, help=HELP_MESSAGES["question"])
     parser.add_argument(
-        "--model",
+        "--provider",
         type=str,
-        choices=arg_options.get_enum_values(arg_options.Models),
+        choices=ModelFactory.get_available_providers(),
         required=True,
-        help=HELP_MESSAGES["model"],
+        help=HELP_MESSAGES["provider"],
     )
     parser.add_argument(
-        "--remote_model",
+        "--model_name",
         type=str,
         required=False,
-        help=HELP_MESSAGES["remote_model"],
+        help=HELP_MESSAGES["model_name"],
     )
     parser.add_argument(
         "--output",
@@ -294,23 +294,32 @@ def main() -> int:
     if args.prompt_text:
         prompt_content += args.prompt_text
 
+    try:
+        model_args = {'model_name': args.model_name} if args.model_name else {}
+        model = ModelFactory.create(args.provider, **model_args)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
     if args.scope == "image":
         prompt = {"prompt_content": prompt_content}
-        request, response = image_processing.process_image(args, prompt, system_instructions, marking_instructions)
+        request, response = image_processing.process_image(
+            model, args, prompt, system_instructions, marking_instructions
+        )
     elif args.scope == "text":
         request, response = text_processing.process_text(
-            args, prompt_content, system_instructions, marking_instructions
+            model, args, prompt_content, system_instructions, marking_instructions
         )
     else:
         request, response = code_processing.process_code(
-            args, prompt_content, system_instructions, marking_instructions
+            model, args, prompt_content, system_instructions, marking_instructions
         )
 
     markdown_template = load_markdown_template(args.output_template)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_text = markdown_template.format(
         question=args.question or "N/A",
-        model=args.model,
+        model=args.provider,
         request=request,
         response=response,
         timestamp=timestamp,

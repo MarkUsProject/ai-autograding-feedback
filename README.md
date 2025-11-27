@@ -31,18 +31,19 @@ For the image scope, the program takes up to two files, depending on the prompt 
 | `--submission_type`  | Type of submission (from `arg_options.FileType`)                    | ❌ |
 | `--prompt`           | Pre-defined prompt name or file path to custom prompt file          | ❌ **|
 | `--prompt_text`      | String prompt                                                       | ❌ ** |
-| `--scope`            | Processing scope (`image` or `code` or `text`)                      | ✅ |
+| `--scope`            | Processing scope (from `arg_options.Scope`)                         | ✅ |
 | `--submission`       | Submission file path                                                | ✅ |
 | `--question`         | Specific question to evaluate                                       | ❌ |
-| `--model`            | Model type (from `arg_options.Models`)                              | ✅ |
+| `--provider`         | Model provider (available providers from `ModelFactory`)            | ✅ |
+| `--model_name`       | Specific model name to override provider's default model            | ❌ |
 | `--output`           | File path for where to record the output                            | ❌ |
 | `--solution`         | File path for the solution file                                     | ❌ |
 | `--test_output`      | File path for the file containing the results from tests            | ❌ |
 | `--submission_image` | File path for the submission image file                             | ❌ |
 | `--solution_image`   | File path for the solution image file                               | ❌ |
 | `--system_prompt`    | Pre-defined system prompt name or file path to custom system prompt | ❌ |
-| `--llama_mode`       | How to invoke deepSeek-v3 (choices in `arg_options.LlamaMode`)      | ❌ |
-| `--output_template`  | Output template file (from `arg_options.OutputTemplate)             | ❌ |
+| `--llama_mode`       | How to invoke llama.cpp (from `arg_options.LlamaMode`)              | ❌ |
+| `--output_template`  | Output template file (from `arg_options.OutputTemplate`)            | ❌ |
 | `--json_schema`      | File path to json file for schema for structured output             | ❌ |
 | `--marking_instructions` | File path to marking instructions/rubric                        | ❌ |
 | `--model_options`    | Comma-separated key-value pairs of model options and their values   | ❌ |
@@ -145,6 +146,38 @@ System prompts define the AI model's behavior, tone, and approach to providing f
 ## Marking Instructions
 The `--marking_instructions` argument accepts a file path to a text file containing rubric or marking instructions. If the prompt template contains a `{marking_instructions}` placeholder, the contents of the file will be inserted at that location in the prompt.
 
+## Providers and Models
+
+The `--provider` argument specifies which model provider to use. Each provider has a default model that will be used unless you override it with the `--model_name` argument.
+
+### Available Providers
+
+To see all available providers, run:
+```bash
+python -m ai_feedback --help
+```
+
+Current providers include:
+- `claude` - Uses Claude AI models (requires CLAUDE_API_KEY)
+- `codellama` - Uses CodeLlama via Ollama (default: `codellama:latest`)
+- `deepseek` - Uses DeepSeek models via Ollama (default: `deepseek-r1:70b`)
+- `openai` - Uses OpenAI models (requires OPENAI_API_KEY, default: `gpt-4o`)
+- `openai-vector` - Uses OpenAI with vector store functionality (requires OPENAI_API_KEY)
+- `remote` - Uses remote API server (default: `gpt-oss:120b`)
+
+### Using --model_name
+
+The `--model_name` argument allows you to override the provider's default model. For example:
+```bash
+# Use Claude provider with a specific model
+python -m ai_feedback --provider claude --model_name claude-3-opus-20240229 ...
+
+# Use DeepSeek provider with a specific Ollama model
+python -m ai_feedback --provider deepseek --model_name "deepSeek-R1:70b" ...
+```
+
+If `--model_name` is not specified, each provider will use its default model.
+
 ## Models
 The models used can be seen under the ai_feedback/models folder.
 ### OpenAI Vector Store
@@ -211,15 +244,20 @@ For code, write the heading in a comment line (e.g., ### Question 1 in Python). 
 Matching is case-insensitive and normalizes smart quotes, dashes, and extra whitespace.
 
 ## Test Files
-- Any subdirectory of /test_submissions can be run locally. More examples can be added to this directory using a similar fashion.
+Example submission files are available in the `/presentation_materials` directory, including:
+- `iris_code_example/` - Python code examples
+- `iris_image_examples/` - Jupyter notebook examples with image outputs
+- `pdf_example/` - PDF submission examples
 
-## GGR274 Test File Assumptions
+See the "Example Commands" section above for tested usage examples.
+
+## File Structure Assumptions
 ### Code Scope
-To test the program using the GGR274 files, we assume that the test assignment files follow a specific directory structure. Currently, this program has been tested using *Homework 5* of the *GGR274* class at the *University of Toronto*.
+When evaluating code submissions, especially Jupyter notebooks, the program expects files to follow specific formatting conventions.
 
 ##### Directory Structure
 
-Within the `test_submissions/ggr274_homework5` directory, mock submissions are contained in a separate subdirectories `test_submissions/ggr274_homework5/test#`. The following naming convention is used for the files:
+For organized test scenarios, mock submissions can be structured in separate subdirectories. The following naming convention is recommended:
 
 - `Homework_5_solution.ipynb` – Instructor-provided solution file
 - `student_submission.ipynb` – Student's submission file
@@ -245,9 +283,10 @@ To ensure proper extraction and evaluation of student responses, the following f
 
 ### Image Scope
 #### Test Files
-Mock student submissions are stored in `ggr274_homework5/image_test#`. The following naming convention is used for the files:
-- `solution.ipynb` – Instructor-provided solution file
+Example image submissions are available in `presentation_materials/iris_image_examples/image_test_*/`. Each directory contains:
 - `student_submission.ipynb` – Student's submission file
+- `student_submission.png` – Generated image output
+- `student_submission.txt` – Converted notebook text
 
 ##### Notebook Preprocessing
 To grade a specific question using the `--question` argument, add the tag `markus_question_name: <question name>` to the metadata for the code cell that generates an image to be graded. The previous cell's markdown content will be used as the question's context.
@@ -275,7 +314,8 @@ python -m ai_feedback \
   --submission_image <image_file_path> \
   --solution_image <image_file_path> \
   --question <question_number> \
-  --model <model_name> \
+  --provider <provider_name> \
+  --model_name <model_name> \
   --output <file_path_to> \
   --output_template <file_name> \
   --system_prompt <prompt_file_path> \
@@ -289,67 +329,78 @@ python -m ai_feedback -h
 
 ### Example Commands
 
-#### Evaluate cnn_example test using openAI model
+The following examples demonstrate common usage patterns using files available in the `presentation_materials/` directory.
+
+#### Evaluate iris code example using DeepSeek model
 ```bash
-python -m ai_feedback --prompt code_lines --scope code --submission test_submissions/cnn_example/cnn_submission --solution test_submissions/cnn_example/cnn_solution.py --model openai
+python -m ai_feedback \
+  --prompt code_lines \
+  --scope code \
+  --submission presentation_materials/iris_code_example/student_submission.py \
+  --solution presentation_materials/iris_code_example/instructor_solution.py \
+  --provider deepseek \
+  --model_name "deepSeek-R1:70b"
 ```
 
-#### Evaluate cnn_example test using openAI model and custom prompt
+#### Evaluate iris code example with custom prompt text
 ```bash
-python -m ai_feedback --prompt_text "Evaluate the student's code readability." --scope code --submission test_submissions/cnn_example/cnn_submission.py --model openai
+python -m ai_feedback \
+  --prompt_text "Evaluate the student's code readability and identify any logical errors." \
+  --scope code \
+  --submission presentation_materials/iris_code_example/student_submission.py \
+  --solution presentation_materials/iris_code_example/instructor_solution.py \
+  --provider deepseek
 ```
 
-#### Evaluate pdf_example test using openAI model
+#### Evaluate PDF example using DeepSeek model
 ```bash
-python -m ai_feedback --prompt text_pdf_analyze --scope text --submission test_submissions/pdf_example/student_pdf_submission.pdf --model openai
+python -m ai_feedback \
+  --prompt text_pdf_analyze \
+  --scope text \
+  --submission presentation_materials/pdf_example/student_submission.pdf \
+  --solution presentation_materials/pdf_example/instructor_solution.pdf \
+  --provider deepseek \
+  --model_name "deepSeek-R1:70b"
 ```
 
-#### Evaluate question1 of test1 of ggr274 homework using DeepSeek model
+#### Evaluate with custom prompt file path
 ```bash
-python -m ai_feedback --prompt code_table \
-  --scope code --submission test_submissions/ggr274_homework5/test1/student_submission.ipynb --question 1 --model deepSeek-R1:70B
+python -m ai_feedback \
+  --prompt ai_feedback/data/prompts/user/code_table.md \
+  --scope code \
+  --submission presentation_materials/iris_code_example/student_submission.py \
+  --solution presentation_materials/iris_code_example/instructor_solution.py \
+  --provider codellama \
+  --model_name "codellama:latest"
 ```
 
-#### Evaluate the image for question 5b of ggr274 homework with Llama3.2-vision
-```sh
-python -m ai_feedback --prompt image_analyze --scope image --solution ./test_submissions/ggr274_homework5/image_test2/student_submission.ipynb --submission_image test_submissions/ggr274_homework5/image_test2/student_submission.png --question "Question 5b" --model llama3.2-vision:90b
-```
-
-### Evaluate the bfs example with remote model to test_file using the verbose template
-```sh
-python -m ai_feedback --prompt code_lines --scope code --solution ./test_submissions/bfs_example/bfs_solution.py --submission test_submissions/bfs_example/bfs_submission.py --model remote --output --output test_file --output_template verbose
-```
-
-#### Evalute the Jupyter notebook of test1 of ggr274 using DeepSeek-v3 via llama.cpp server
-```sh
-python3 -m ai_feedback --prompt code_table --scope code \
-        --submission test_submissions/ggr274_homework5/test1/student_submission.ipynb \
-        --solution test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb \
-        --model deepSeek-v3 --llama_mode server
-```
-
-#### Evalute the Jupyter notebook of test1 of ggr274 using DeepSeek-v3 via llama.cpp cli
-```sh
-python3 -m ai_feedback --prompt code_table --scope code \
-        --submission test_submissions/ggr274_homework5/test1/student_submission.ipynb \
-        --solution test_submissions/ggr274_homework5/test1/Homework_5_solution.ipynb \
-        --model deepSeek-v3 --llama_mode cli
-```
-
-
-#### Get annotations for cnn_example test using openAI model
+#### Evaluate with output file and verbose template
 ```bash
-python -m ai_feedback --prompt code_annotations --scope code --submission test_submissions/cnn_example/cnn_submission --solution test_submissions/cnn_example/cnn_solution.py --model openai --json_schema ai_feedback/data/schema/code_annotation_schema.json
+python -m ai_feedback \
+  --prompt code_lines \
+  --scope code \
+  --submission presentation_materials/iris_code_example/student_submission.py \
+  --solution presentation_materials/iris_code_example/instructor_solution.py \
+  --provider deepseek \
+  --output ./feedback_output.md \
+  --output_template verbose
 ```
 
-#### Evaluate using custom prompt file path
+#### Evaluate with custom model_options (requires OpenAI API key)
 ```bash
-python -m ai_feedback --prompt ai_feedback/data/prompts/user/code_overall.md --scope code --submission test_submissions/csc108/correct_submission/correct_submission.py --solution test_submissions/csc108/solution.py --model codellama:latest
+python -m ai_feedback \
+  --prompt code_table \
+  --scope code \
+  --submission presentation_materials/iris_code_example/student_submission.py \
+  --solution presentation_materials/iris_code_example/instructor_solution.py \
+  --provider openai-vector \
+  --model_options "max_tokens=1200,temperature=0.4,top_p=0.92"
 ```
-### Evaluate using custom model_options
-```bash
-python3 -m ai_feedback --prompt code_table --scope code --submission ../ai-autograding-feedback-eval/test_submissions/108/hard_coding_submission.py --model openai-vector --submission_type python --model_options "max_tokens=1200,temperature=0.4,top_p=0.92"
-```
+
+**Note:** Some examples require additional setup:
+- OpenAI and Claude providers require API keys in `.env` file
+- Image scope examples require vision-capable models (e.g., `llama3.2-vision:90b`, `llava:34b`)
+- Remote provider requires a running remote API server
 
 
 #### Using Ollama
@@ -414,26 +465,20 @@ Along with any other packages that the submission or solution file uses.
 5. Ensure the Timeout is set to 120 seconds or longer.
 
 #### Running Python Autotester Examples
-##### CNN Example
-- Look at the /test_submissions/cnn_example directory for the following files
-- Instructor uploads: cnn_solution.py, cnn_test.py, llm_helpers.py, python_tester_llm_code.py files
-- Separate test groups for cnn_test.py and python_tester_llm_code.py
-- cnn_test.py Autotester package requirements: torch numpy
-- python_tester_llm_code.py Autotester package requirements: git+https://github.com/MarkUsProject/ai-autograding-feedback.git#egg=ai_feedback numpy torch
-- Student uploads: cnn_submission.pdf
 
-##### BFS Example
-- Look at the /test_submissions/bfs_example directory for the following files
-- Instructor uploads: bfs_solution.py, test_bfs.py, llm_helpers.py, python_tester_llm_code.py files
-- Separate test groups for test_bfs.py and python_tester_llm_code.py
-- python_tester_llm_code.py Autotester package requirements: git+https://github.com/MarkUsProject/ai-autograding-feedback.git#egg=ai_feedback
-- Student uploads: bfs_submission.pdf
+These examples describe recommended file structures for MarkUs autotester integration. Refer to `/markus_test_scripts` for the actual test script files.
 
-##### PDF Example
-- Look at the /test_submissions/pdf_example directory for the following files
-- Instructor uploads: instructor_pdf_solution.pdf, llm_helpers.py, python_tester_llm_pdf.py files
+##### Code Evaluation Example
+- Instructor uploads: solution.py, test_file.py, llm_helpers.py, python_tester_llm_code.py files
+- Separate test groups for test_file.py and python_tester_llm_code.py
+- test_file.py Autotester package requirements: (depends on submission code)
+- python_tester_llm_code.py Autotester package requirements: git+https://github.com/MarkUsProject/ai-autograding-feedback.git#egg=ai_feedback (plus any packages needed by submission)
+- Student uploads: submission.py
+
+##### PDF Evaluation Example
+- Instructor uploads: instructor_solution.pdf, llm_helpers.py, python_tester_llm_pdf.py files (from `/markus_test_scripts`)
 - Autotester package requirements: git+https://github.com/MarkUsProject/ai-autograding-feedback.git#egg=ai_feedback
-- Student uploads: student_pdf_submission.pdf
+- Student uploads: student_submission.pdf
 
 #### Custom Tester Usage
 1. Ensure the student has submitted a submission file.
@@ -452,11 +497,10 @@ Also pip install other packages that the submission or solution file uses.
 5. Ensure the Timeout is set to 120 seconds or longer.
 6. Ensure Markus Autotester docker container has the API Keys in an .env file and specified in the docker compose file.
 
-##### GGR274 Test1 Example
-- Look at the /test_submissions/ggr274_hw5_custom_tester directory for the following files
-- Instructor uploads: Homework_5_solution.ipynb, test_hw5.py, test_output.txt, custom_tester_llm_code.sh, run_hw5_test.sh
-- Two separate test groups: one for run_hw5_test.sh, and one for custom_tester_llm_code.sh
-- Student uploads: test1_submission.ipynb,  test1_submission.txt
+##### Jupyter Notebook Custom Tester Example
+- Instructor uploads: solution.ipynb, test_script.py, test_output.txt, custom_tester_llm_code.sh (from `/markus_test_scripts`), run_test.sh
+- Two separate test groups: one for run_test.sh, and one for custom_tester_llm_code.sh
+- Student uploads: submission.ipynb, submission.txt
 
 NOTE: if the LLM Test Group appears to be blank/does not turn green, try increasing the timeout.
 

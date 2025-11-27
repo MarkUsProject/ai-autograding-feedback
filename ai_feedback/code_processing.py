@@ -1,9 +1,7 @@
 import os
-import sys
 from pathlib import Path
 from typing import Callable, Optional, Tuple
 
-from .helpers.arg_options import model_mapping
 from .helpers.file_converter import rename_files
 from .helpers.template_utils import render_prompt_template
 
@@ -11,7 +9,7 @@ EXPECTED_SUFFIXES = ["_solution", "test_output", "_submission"]
 
 
 def process_code(
-    args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
+    model, args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
 ) -> Tuple[str, str]:
     """
     Processes assignment files and generates a response using the selected model.
@@ -67,16 +65,6 @@ def process_code(
         question_num=args.question,
         marking_instructions=marking_instructions,
     )
-
-    if args.model in model_mapping:
-        model_class = model_mapping[args.model]
-        if model_class.__name__ == 'RemoteModel' and args.remote_model:
-            model = model_class(model_name=args.remote_model)
-        else:
-            model = model_class()
-    else:
-        print("Invalid model selected for code scope.")
-        sys.exit(1)
 
     if args.scope == "code":
         if args.question:
