@@ -1,7 +1,7 @@
-import os
-import sys
 import json
+import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -9,10 +9,11 @@ import ollama
 import requests
 from dotenv import load_dotenv
 
-from .Model import Model
 from ..helpers.model_options_helpers import cast_to_type, ollama_option_schema
+from .Model import Model
 
 load_dotenv()
+
 
 class DeepSeekModelModified(Model):
     """
@@ -99,7 +100,9 @@ class DeepSeekModelModified(Model):
         if self.backend == "ollama":
             response = self._generate_with_ollama(prompt, system_instructions, model_options, schema)
         elif self.backend == "llama":
-            response = self._generate_with_llama(prompt, system_instructions, model_options, schema, effective_llama_mode)
+            response = self._generate_with_llama(
+                prompt, system_instructions, model_options, schema, effective_llama_mode
+            )
         else:
             raise ValueError(f"Unsupported backend: {self.backend}. Use 'ollama' or 'llama'.")
 

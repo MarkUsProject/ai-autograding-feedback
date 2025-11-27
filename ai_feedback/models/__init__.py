@@ -1,12 +1,13 @@
-from typing import Type, Dict
+from typing import Dict, Type
 
-from .Model import Model
 from .ClaudeModel import ClaudeModel
-from .RemoteModel import RemoteModel
-from .OpenAIModel import OpenAIModel
 from .CodeLlamaModel import CodeLlamaModel
-from .OpenAIModelVector import OpenAIModelVector
 from .DeepSeekModelModified import DeepSeekModelModified
+from .Model import Model
+from .OpenAIModel import OpenAIModel
+from .OpenAIModelVector import OpenAIModelVector
+from .RemoteModel import RemoteModel
+
 
 class ModelFactory:
     """Factory for creating AI model instances with proper dependency injection."""
@@ -54,10 +55,7 @@ class ModelFactory:
         """
         if provider not in cls._registry:
             available = ", ".join(sorted(cls._registry.keys()))
-            raise ValueError(
-                f"Unknown model provider '{provider}'. "
-                f"Available providers: {available}"
-            )
+            raise ValueError(f"Unknown model provider '{provider}'. " f"Available providers: {available}")
         return cls._registry[provider]
 
     @classmethod

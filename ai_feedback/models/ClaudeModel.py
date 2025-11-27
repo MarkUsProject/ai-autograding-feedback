@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
-from ollama import Message
 from typing import Optional, Tuple
 
 import anthropic
 from dotenv import load_dotenv
+from ollama import Message
 
 from ..helpers.image_extractor import encode_image
 from ..helpers.model_options_helpers import cast_to_type, claude_option_schema

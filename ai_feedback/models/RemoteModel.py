@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Any, Optional, Tuple
 
 import requests
-from ollama import Message
 from dotenv import load_dotenv
+from ollama import Message
 
 from .Model import Model
 
