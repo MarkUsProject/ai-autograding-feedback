@@ -192,11 +192,11 @@ def main() -> int:
     parser.add_argument("--solution", type=str, required=False, default="", help=HELP_MESSAGES["solution"])
     parser.add_argument("--question", type=str, required=False, help=HELP_MESSAGES["question"])
     parser.add_argument(
-        "--model",
+        "--provider",
         type=str,
         choices=arg_options.get_enum_values(arg_options.Models),
         required=True,
-        help=HELP_MESSAGES["model"],
+        help=HELP_MESSAGES["provider"],
     )
     parser.add_argument(
         "--model_name",
@@ -310,7 +310,7 @@ def main() -> int:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_text = markdown_template.format(
         question=args.question or "N/A",
-        model=args.model,
+        model=args.provider,
         request=request,
         response=response,
         timestamp=timestamp,
