@@ -89,6 +89,23 @@ class RemoteModel(Model):
             filename = os.path.basename(submission_image)
             files[filename] = (filename, open(submission_image, 'rb'))
 
-        response = requests.post(self.remote_url, data=data, headers=headers, files=files)
+        try:
+            response = requests.post(self.remote_url, data=data, headers=headers, files=files)
+            response.raise_for_status()
+            response_json = response.json()
+        except requests.exceptions.Timeout as e:
+            raise RuntimeError("Request timed out") from e
+        except requests.exceptions.ConnectionError as e:
+            raise RuntimeError("Connection error") from e
+        except requests.exceptions.HTTPError as e:
+            # Non-2xx response
+            status = e.response.status_code
+            body = e.response.text
+            raise RuntimeError(f"HTTP {status}: {body}") from e
+        except requests.exceptions.JSONDecodeError as e:
+            raise RuntimeError("Could not parse response") from e
+        except requests.exceptions.RequestException as e:
+            # Catch-all for any other requests-related errors
+            raise RuntimeError("Request failed") from e
 
-        return prompt, response.json()
+        return prompt, response_json
