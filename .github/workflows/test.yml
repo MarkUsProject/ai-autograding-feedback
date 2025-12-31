@@ -32,4 +32,4 @@ jobs:
           LLAMA_CLI_PATH: /fake/path/to/llama-cli
           LLAMA_SERVER_URL: http://localhost:8080
           OPENAI_API_KEY: fake-api-key
-        run: uv run pytest -vv tests || [ $? -eq 5 ]
+        run: uv run pytest -vv || [ $? -eq 5 ]
