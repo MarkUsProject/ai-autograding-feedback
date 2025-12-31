@@ -1,6 +1,6 @@
 [project]
 name = "markus-ai-feedback"
-version = "0.0.1"
+version = "0.1.0"
 authors = [
     { name="Ricky Chen" },
     { name="Sohee Goo" },
