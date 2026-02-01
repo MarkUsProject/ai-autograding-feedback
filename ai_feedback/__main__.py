@@ -205,6 +205,12 @@ def main() -> int:
         help=HELP_MESSAGES["model_name"],
     )
     parser.add_argument(
+        "--remote_url",
+        type=str,
+        required=False,
+        help="Remote server URL for the RemoteModel endpoint.",
+    )
+    parser.add_argument(
         "--output",
         type=str,
         required=False,
@@ -295,7 +301,11 @@ def main() -> int:
         prompt_content += args.prompt_text
 
     try:
-        model_args = {'model_name': args.model_name} if args.model_name else {}
+        model_args = {}
+        if args.model_name:
+            model_args['model_name'] = args.model_name
+        if args.remote_url:
+            model_args['remote_url'] = args.remote_url
         model = ModelFactory.create(args.provider, **model_args)
     except ValueError as e:
         print(f"Error: {e}")
