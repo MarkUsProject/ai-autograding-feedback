@@ -8,6 +8,7 @@ HELP_MESSAGES = {
     "solution": "The file path for the solution file.",
     "question": "The specific question number to analyze within the assignment (if applicable).",
     "provider": "The name of the LLM provider to use for evaluation.",
+    "model": "Deprecated: use --provider instead. The name of the LLM provider to use for evaluation.",
     "model_name": "The name of the LLM model to use for evaluation, this option specifies the model to use.",
     "output": "Format to display the output response.",
     "llama_mode": "Specifies how to invoke llama.cpp: either directly via its command‐line interface (CLI) or by sending requests to a running llama-server instance.",

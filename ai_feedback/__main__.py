@@ -195,8 +195,15 @@ def main() -> int:
         "--provider",
         type=str,
         choices=ModelFactory.get_available_providers(),
-        required=True,
+        required=False,
         help=HELP_MESSAGES["provider"],
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        choices=ModelFactory.get_available_providers(),
+        required=False,
+        help="Deprecated: use --provider instead. Kept for backward compatibility.",
     )
     parser.add_argument(
         "--model_name",
@@ -264,6 +271,12 @@ def main() -> int:
     )
 
     args = parser.parse_args()
+
+    # Resolve --provider / --model (backward compat): --provider takes precedence
+    if args.provider is None and args.model is not None:
+        args.provider = args.model
+    if args.provider is None:
+        parser.error("one of --provider or --model is required")
 
     if args.model_options:
         args.model_options = dict(pair.split('=') for pair in args.model_options.split(','))
