@@ -3,7 +3,7 @@
 source venv/bin/activate
 ```
 
-# Analyze code correctness using DeepSeek
+# Analyze code correctness using Remote Model (via ai-server)
 ```sh
 python -m ai_feedback \
 --submission_type jupyter \
@@ -11,8 +11,8 @@ python -m ai_feedback \
 --scope code \
 --submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
 --question "4" \
---provider deepseek \
---model_name "deepSeek-R1:70b" \
+--provider remote \
+--model_name "deepSeek-R1:70B" \
 --model_options max_tokens=5000
 
 ```
