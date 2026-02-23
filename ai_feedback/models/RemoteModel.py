@@ -70,7 +70,7 @@ class RemoteModel(Model):
             "content": prompt,
             "model": self.model_name,
             "system_instructions": system_instructions,
-            "model_options": model_options,
+            "model_options": json.dumps(model_options) if model_options else None,
         }
         if json_schema:
             schema_path = Path(json_schema)
