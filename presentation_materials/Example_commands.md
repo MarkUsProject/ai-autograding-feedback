@@ -17,6 +17,34 @@ python -m ai_feedback \
 
 ```
 
+# Analyze code correctness using Remote Model with JSON model_options
+```sh
+python -m ai_feedback \
+--submission_type jupyter \
+--prompt code_explanation \
+--scope code \
+--submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
+--question "4" \
+--provider remote \
+--model_name "deepSeek-R1:70B" \
+--model_options '{"max_tokens": 5000}'
+
+```
+
+# Analyze code correctness using Remote Model with multiple model_options
+```sh
+python -m ai_feedback \
+--submission_type jupyter \
+--prompt code_explanation \
+--scope code \
+--submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
+--question "4" \
+--provider remote \
+--model_name "deepSeek-R1:70B" \
+--model_options '{"num_predict": 100, "temperature": 0.5}'
+
+```
+
 # Example Response
 Let me identify some mistakes in your submission and explain why they occur:
 

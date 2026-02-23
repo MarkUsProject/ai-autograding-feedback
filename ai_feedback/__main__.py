@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import os.path
 import sys
@@ -279,16 +280,19 @@ def main() -> int:
         parser.error("one of --provider or --model is required")
 
     if args.model_options:
-        args.model_options = dict(pair.split('=') for pair in args.model_options.split(','))
-        # Cast numeric values to their proper types
-        for key, value in args.model_options.items():
-            try:
-                args.model_options[key] = int(value)
-            except ValueError:
+        try:
+            args.model_options = json.loads(args.model_options)
+        except (json.JSONDecodeError, TypeError):
+            args.model_options = dict(pair.split('=') for pair in args.model_options.split(','))
+            # Cast numeric values to their proper types
+            for key, value in args.model_options.items():
                 try:
-                    args.model_options[key] = float(value)
+                    args.model_options[key] = int(value)
                 except ValueError:
-                    pass  # Keep as string
+                    try:
+                        args.model_options[key] = float(value)
+                    except ValueError:
+                        pass  # Keep as string
     else:
         args.model_options = {}
 
