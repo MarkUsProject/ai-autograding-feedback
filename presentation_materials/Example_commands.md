@@ -10,7 +10,7 @@ python -m ai_feedback \
 --prompt code_explanation \
 --scope code \
 --submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
---question "4" \
+--question "Task 4" \
 --provider remote \
 --model_name "deepSeek-R1:70B" \
 --model_options max_tokens=5000
@@ -24,7 +24,7 @@ python -m ai_feedback \
 --prompt code_explanation \
 --scope code \
 --submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
---question "4" \
+--question "Task 4" \
 --provider remote \
 --model_name "deepSeek-R1:70B" \
 --model_options '{"max_tokens": 5000}'
@@ -38,7 +38,7 @@ python -m ai_feedback \
 --prompt code_explanation \
 --scope code \
 --submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
---question "4" \
+--question "Task 4" \
 --provider remote \
 --model_name "deepSeek-R1:70B" \
 --model_options '{"num_predict": 100, "temperature": 0.5}'
@@ -68,7 +68,7 @@ python -m ai_feedback \
 --scope image \
 --submission_image presentation_materials/iris_image_examples/image_test_incorrect/student_submission.png \
 --submission presentation_materials/iris_image_examples/image_test_incorrect/student_submission.ipynb \
---question "4" \
+--question "Task 4" \
 --provider openai
 
 ```
