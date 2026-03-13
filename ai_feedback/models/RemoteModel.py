@@ -27,7 +27,6 @@ class RemoteModel(Model):
         """Initializes the remote model with a remote URL and model name."""
         super().__init__(model_name)
         self.remote_url = remote_url
-        self.model_name = model_name
 
     def generate_response(
         self,

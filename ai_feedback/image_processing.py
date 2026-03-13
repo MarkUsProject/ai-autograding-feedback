@@ -8,10 +8,11 @@ from PIL import Image as PILImage
 from .helpers.image_extractor import extract_images, extract_qmd_python_images
 from .helpers.image_reader import *
 from .helpers.template_utils import render_prompt_template
+from .models.Model import Model
 
 
 def process_image(
-    model, args, prompt: dict, system_instructions: str, marking_instructions: Optional[str] = None
+    model: Model, args, prompt: dict, system_instructions: str, marking_instructions: Optional[str] = None
 ) -> tuple[str, str]:
     """Generates feedback for an image submission.
     Returns the LLM prompt delivered and the returned response."""

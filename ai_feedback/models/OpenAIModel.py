@@ -19,14 +19,13 @@ load_dotenv()
 
 
 class OpenAIModel(Model):
-    def __init__(self, model_name: str = None) -> None:
+    def __init__(self, model_name: str = "gpt-4o") -> None:
         """
         Initialize an OpenAIModel instance.
 
         Loads the OpenAI API key from environment variables and prepares the client.
         """
         super().__init__(model_name)
-        self.model_name = model_name if model_name else "gpt-4o"
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     def generate_response(

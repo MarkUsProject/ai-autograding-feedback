@@ -48,7 +48,6 @@ class DeepSeekModelModified(Model):
         """
         super().__init__(model_name)
         self.backend = backend
-        self.model_name = model_name
         self.llama_mode = llama_mode
 
         # Load llama.cpp configuration

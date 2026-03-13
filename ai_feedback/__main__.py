@@ -204,7 +204,7 @@ def main() -> int:
         type=str,
         choices=ModelFactory.get_available_providers(),
         required=False,
-        help="Deprecated: use --provider instead. Kept for backward compatibility.",
+        help=HELP_MESSAGES["model"],
     )
     parser.add_argument(
         "--model_name",
@@ -216,7 +216,7 @@ def main() -> int:
         "--remote_url",
         type=str,
         required=False,
-        help="Remote server URL for the RemoteModel endpoint.",
+        help=HELP_MESSAGES["remote_url"],
     )
     parser.add_argument(
         "--output",

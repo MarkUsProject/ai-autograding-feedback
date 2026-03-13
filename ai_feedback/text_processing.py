@@ -2,10 +2,11 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 from .helpers.template_utils import render_prompt_template
+from .models.Model import Model
 
 
 def process_text(
-    model, args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
+    model: Model, args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
 ) -> Tuple[str, str]:
     """
     Processes text-based assignment files and generates a response using the selected model.

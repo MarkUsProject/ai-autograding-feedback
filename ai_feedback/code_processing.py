@@ -4,12 +4,13 @@ from typing import Callable, Optional, Tuple
 
 from .helpers.file_converter import rename_files
 from .helpers.template_utils import render_prompt_template
+from .models.Model import Model
 
 EXPECTED_SUFFIXES = ["_solution", "test_output", "_submission"]
 
 
 def process_code(
-    model, args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
+    model: Model, args, prompt: str, system_instructions: str, marking_instructions: Optional[str] = None
 ) -> Tuple[str, str]:
     """
     Processes assignment files and generates a response using the selected model.

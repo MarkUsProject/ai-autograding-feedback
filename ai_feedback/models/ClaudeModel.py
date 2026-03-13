@@ -15,12 +15,11 @@ load_dotenv()
 
 
 class ClaudeModel(Model):
-    def __init__(self, model_name: str = None) -> None:
+    def __init__(self, model_name: str = "claude-3-7-sonnet-20250219") -> None:
         """
         Initializes the ClaudeModel with the Anthropic client using an API key.
         """
         super().__init__(model_name)
-        self.model_name = model_name if model_name else "claude-3-7-sonnet-20250219"
         self.client = anthropic.Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
 
     def generate_response(

@@ -12,7 +12,7 @@ their own model-specific logic.
 
 
 class Model:
-    def __init__(self, model_name: str = None):
+    def __init__(self, model_name: str):
         """
         Initialize the model.
         """

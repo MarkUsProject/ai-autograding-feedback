@@ -66,24 +66,6 @@ class Scope(Enum):
         return self.value
 
 
-class Models(Enum):
-    """
-    Enum representing the available AI model types.
-    """
-
-    OPENAI = "openai"
-    OPENAIVECTOR = "openai-vector"
-    LLAMA = "llama3.2-vision:90b"
-    LLAVA = "llava:34b"
-    DEEPSEEK = "deepSeek-R1:70B"
-    CODELLAMA = "codellama:latest"
-    CLAUDE = "claude-3.7-sonnet"
-    REMOTE = "remote"
-    DEEPSEEKV3 = "deepSeek-v3"
-
-    def __str__(self):
-        return self.value
-
 
 class FileType(Enum):
     """

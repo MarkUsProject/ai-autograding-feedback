@@ -158,12 +158,12 @@ python -m ai_feedback --help
 ```
 
 Current providers include:
-- `claude` - Uses Claude AI models (requires CLAUDE_API_KEY)
+- `claude` - Uses Claude AI models (requires `CLAUDE_API_KEY`, default: `claude-3-7-sonnet-20250219`)
 - `codellama` - Uses CodeLlama via Ollama (default: `codellama:latest`)
 - `deepseek` - Uses DeepSeek models via Ollama (default: `deepseek-r1:70b`)
-- `openai` - Uses OpenAI models (requires OPENAI_API_KEY, default: `gpt-4o`)
-- `openai-vector` - Uses OpenAI with vector store functionality (requires OPENAI_API_KEY)
-- `remote` - Uses remote API server (default: `gpt-oss:120b`)
+- `openai` - Uses OpenAI models (requires `OPENAI_API_KEY`, default: `gpt-4o`)
+- `openai-vector` - Uses OpenAI with vector store functionality (requires `OPENAI_API_KEY`)
+- `remote` - Uses remote API server (requires `REMOTE_API_KEY`, default: `gpt-oss:120b`)
 
 ### Using --model_name
 

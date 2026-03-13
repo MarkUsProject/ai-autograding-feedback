@@ -20,11 +20,11 @@ class OpenAIModelVector(Model):
     after processing. Files are not directly uploaded as part of prompt.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, model_name: str = "gpt-4o-mini") -> None:
         """
         Creates a new OpenAI vector store and an assistant model that can use file search as a tool.
         """
-        super().__init__()
+        super().__init__(model_name)
 
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.vector_store = self.client.vector_stores.create(name="Markus LLM Vector Store")
