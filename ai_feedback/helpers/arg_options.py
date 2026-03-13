@@ -66,7 +66,6 @@ class Scope(Enum):
         return self.value
 
 
-
 class FileType(Enum):
     """
     Enum representing different input file types that the application can process.
