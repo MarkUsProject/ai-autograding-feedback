@@ -1,7 +1,5 @@
 from enum import Enum
 
-from .. import models
-
 
 def get_enum_values(enum_class: type[Enum]) -> list[str]:
     """
@@ -63,36 +61,6 @@ class Scope(Enum):
     IMAGE = "image"
     CODE = "code"
     TEXT = "text"
-
-    def __str__(self):
-        return self.value
-
-
-model_mapping = {
-    "deepSeek-R1:70B": models.DeepSeekModel,
-    "openai": models.OpenAIModel,
-    "openai-vector": models.OpenAIModelVector,
-    "codellama:latest": models.CodeLlamaModel,
-    "claude-3.7-sonnet": models.ClaudeModel,
-    "remote": models.RemoteModel,
-    "deepSeek-v3": models.DeepSeekV3Model,
-}
-
-
-class Models(Enum):
-    """
-    Enum representing the available AI model types.
-    """
-
-    OPENAI = "openai"
-    OPENAIVECTOR = "openai-vector"
-    LLAMA = "llama3.2-vision:90b"
-    LLAVA = "llava:34b"
-    DEEPSEEK = "deepSeek-R1:70B"
-    CODELLAMA = "codellama:latest"
-    CLAUDE = "claude-3.7-sonnet"
-    REMOTE = "remote"
-    DEEPSEEKV3 = "deepSeek-v3"
 
     def __str__(self):
         return self.value

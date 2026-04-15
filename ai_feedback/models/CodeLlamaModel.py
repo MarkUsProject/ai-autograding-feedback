@@ -11,13 +11,11 @@ from .Model import Model
 
 class CodeLlamaModel(Model):
 
-    def __init__(self) -> None:
+    def __init__(self, model_name: str = "codellama:latest") -> None:
         """
         Initializes the CodeLlamaModel with configuration for the model and system instructions.
         """
-        self.model = {
-            "model": "codellama:latest",
-        }
+        super().__init__(model_name)
 
     def generate_response(
         self,
@@ -64,7 +62,7 @@ class CodeLlamaModel(Model):
         model_options = cast_to_type(ollama_option_schema, model_options)
 
         response = ollama.chat(
-            model=self.model["model"],
+            model=self.model_name,
             messages=[
                 {"role": "system", "content": system_instructions},
                 {"role": "user", "content": prompt},

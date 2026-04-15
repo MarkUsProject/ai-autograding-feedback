@@ -9,6 +9,7 @@ from pathlib import Path
 from . import code_processing, image_processing, text_processing
 from .helpers import arg_options
 from .helpers.constants import HELP_MESSAGES
+from .models import ModelFactory
 
 _TYPE_BY_EXTENSION = {
     '.c': 'C',
@@ -192,17 +193,30 @@ def main() -> int:
     parser.add_argument("--solution", type=str, required=False, default="", help=HELP_MESSAGES["solution"])
     parser.add_argument("--question", type=str, required=False, help=HELP_MESSAGES["question"])
     parser.add_argument(
+        "--provider",
+        type=str,
+        choices=ModelFactory.get_available_providers(),
+        required=False,
+        help=HELP_MESSAGES["provider"],
+    )
+    parser.add_argument(
         "--model",
         type=str,
-        choices=arg_options.get_enum_values(arg_options.Models),
-        required=True,
+        choices=ModelFactory.get_available_providers(),
+        required=False,
         help=HELP_MESSAGES["model"],
     )
     parser.add_argument(
-        "--remote_model",
+        "--model_name",
         type=str,
         required=False,
-        help=HELP_MESSAGES["remote_model"],
+        help=HELP_MESSAGES["model_name"],
+    )
+    parser.add_argument(
+        "--remote_url",
+        type=str,
+        required=False,
+        help=HELP_MESSAGES["remote_url"],
     )
     parser.add_argument(
         "--output",
@@ -259,8 +273,26 @@ def main() -> int:
 
     args = parser.parse_args()
 
+    # Resolve --provider / --model (backward compat): --provider takes precedence
+    if args.provider is None and args.model is not None:
+        args.provider = args.model
+    if args.provider is None:
+        parser.error("one of --provider or --model is required")
+
     if args.model_options:
-        args.model_options = dict(pair.split('=') for pair in args.model_options.split(','))
+        try:
+            args.model_options = json.loads(args.model_options)
+        except (json.JSONDecodeError, TypeError):
+            args.model_options = dict(pair.split('=') for pair in args.model_options.split(','))
+            # Cast numeric values to their proper types
+            for key, value in args.model_options.items():
+                try:
+                    args.model_options[key] = int(value)
+                except ValueError:
+                    try:
+                        args.model_options[key] = float(value)
+                    except ValueError:
+                        pass  # Keep as string
     else:
         args.model_options = {}
 
@@ -294,23 +326,36 @@ def main() -> int:
     if args.prompt_text:
         prompt_content += args.prompt_text
 
+    try:
+        model_args = {}
+        if args.model_name:
+            model_args['model_name'] = args.model_name
+        if args.remote_url:
+            model_args['remote_url'] = args.remote_url
+        model = ModelFactory.create(args.provider, **model_args)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
     if args.scope == "image":
         prompt = {"prompt_content": prompt_content}
-        request, response = image_processing.process_image(args, prompt, system_instructions, marking_instructions)
+        request, response = image_processing.process_image(
+            model, args, prompt, system_instructions, marking_instructions
+        )
     elif args.scope == "text":
         request, response = text_processing.process_text(
-            args, prompt_content, system_instructions, marking_instructions
+            model, args, prompt_content, system_instructions, marking_instructions
         )
     else:
         request, response = code_processing.process_code(
-            args, prompt_content, system_instructions, marking_instructions
+            model, args, prompt_content, system_instructions, marking_instructions
         )
 
     markdown_template = load_markdown_template(args.output_template)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_text = markdown_template.format(
         question=args.question or "N/A",
-        model=args.model,
+        model=args.provider,
         request=request,
         response=response,
         timestamp=timestamp,

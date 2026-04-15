@@ -172,3 +172,7 @@ cython_debug/
 
 # macOS system files
 .DS_Store
+
+# output
+stdout
+output_images/

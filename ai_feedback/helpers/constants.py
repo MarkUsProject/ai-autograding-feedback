@@ -7,8 +7,9 @@ HELP_MESSAGES = {
     "submission": "The file path for the submission file.",
     "solution": "The file path for the solution file.",
     "question": "The specific question number to analyze within the assignment (if applicable).",
-    "model": "The name of the LLM model to use for evaluation.",
-    "remote_model": "When using --remote=model, this option specifies the remote model to use.",
+    "provider": "The name of the LLM provider to use for evaluation.",
+    "model": "Deprecated: use --provider instead. The name of the LLM provider to use for evaluation.",
+    "model_name": "The name of the LLM model to use for evaluation, this option specifies the model to use.",
     "output": "Format to display the output response.",
     "llama_mode": "Specifies how to invoke llama.cpp: either directly via its command‐line interface (CLI) or by sending requests to a running llama-server instance.",
     "test_output": "The output of tests from evaluating the assignment.",
@@ -18,4 +19,5 @@ HELP_MESSAGES = {
     "system_prompt": "Pre-defined system prompt name (from ai_feedback/data/prompts/system/) or file path to custom system prompt file.",
     "marking_instructions": "File path to marking instructions/rubric.",
     "model_options": "Comma-separated key-value pairs of model options",
+    "remote_url": "Remote server URL for the RemoteModel endpoint.",
 }
