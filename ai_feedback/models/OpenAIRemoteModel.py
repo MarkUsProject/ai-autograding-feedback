@@ -31,6 +31,11 @@ class OpenAIRemoteModel(OpenAIModel):
     #: Header LiteLLM reads to persist arbitrary metadata on each spend-log row.
     METADATA_HEADER = "x-litellm-spend-logs-metadata"
 
+    #: Reply-size cap sent when the caller does not pick one. The gateway
+    #: rejects calls that omit max_tokens, and the autotester exposes no
+    #: model-options field, so this default is what keeps a plain config working.
+    DEFAULT_MAX_TOKENS = 1024
+
     def __init__(
         self,
         remote_url: str = "http://localhost:4000/v1",
@@ -53,6 +58,14 @@ class OpenAIRemoteModel(OpenAIModel):
             api_key=self._require_api_key(),
             default_headers=self._attribution_headers(),
         )
+
+    def _call_openai(
+        self, prompt: str, system_instructions: str, model_options: Optional[dict] = None, schema: Optional[dict] = None
+    ) -> str:
+        """Delegate to OpenAIModel with max_tokens defaulted; the gateway rejects calls without it."""
+        model_options = dict(model_options or {})
+        model_options.setdefault("max_tokens", self.DEFAULT_MAX_TOKENS)
+        return super()._call_openai(prompt, system_instructions, model_options, schema)
 
     @staticmethod
     def _require_api_key() -> str:
@@ -79,8 +92,7 @@ class OpenAIRemoteModel(OpenAIModel):
             json.loads(metadata)
         except (json.JSONDecodeError, TypeError) as exc:
             raise RuntimeError(
-                "LITELLM_SPEND_METADATA is not valid JSON; refusing to send "
-                "a malformed attribution header."
+                "LITELLM_SPEND_METADATA is not valid JSON; refusing to send a malformed attribution header."
             ) from exc
         return {cls.METADATA_HEADER: metadata}
 

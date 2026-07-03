@@ -113,3 +113,27 @@ def test_generate_response_speaks_openai_contract(fake_openai):
     assert sent["model"] == "gpt-4o-mini"
     roles = [m["role"] for m in sent["messages"]]
     assert roles == ["system", "user"]
+
+
+def test_max_tokens_defaults_when_caller_omits_it(fake_openai):
+    model = OpenAIRemoteModel()
+    model.generate_response(
+        prompt="Review this code.",
+        submission_file=None,
+        system_instructions="You are a TA.",
+        model_options={},
+    )
+    sent = fake_openai.last.completions.calls[0]
+    assert sent["max_tokens"] == OpenAIRemoteModel.DEFAULT_MAX_TOKENS
+
+
+def test_caller_max_tokens_wins_over_default(fake_openai):
+    model = OpenAIRemoteModel()
+    model.generate_response(
+        prompt="Review this code.",
+        submission_file=None,
+        system_instructions="You are a TA.",
+        model_options={"max_tokens": 2048},
+    )
+    sent = fake_openai.last.completions.calls[0]
+    assert sent["max_tokens"] == 2048
