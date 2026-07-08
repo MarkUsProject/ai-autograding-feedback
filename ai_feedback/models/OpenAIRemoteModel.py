@@ -39,7 +39,7 @@ class OpenAIRemoteModel(OpenAIModel):
     def __init__(
         self,
         remote_url: str = "http://localhost:4000/v1",
-        model_name: str = "gpt-4o-mini",
+        model_name: str = "gpt-4o",
     ) -> None:
         """Initialize a client pointed at the LiteLLM gateway.
 
