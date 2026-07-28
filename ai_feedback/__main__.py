@@ -9,7 +9,13 @@ from pathlib import Path
 from . import code_processing, image_processing, text_processing
 from .helpers import arg_options
 from .helpers.constants import HELP_MESSAGES
-from .models import ModelFactory
+from .models import GatewayError, ModelFactory
+
+# Scopes not listed here are handled as code.
+_PROCESSOR_BY_SCOPE = {
+    "image": image_processing.process_image,
+    "text": text_processing.process_text,
+}
 
 _TYPE_BY_EXTENSION = {
     '.c': 'C',
@@ -337,19 +343,18 @@ def main() -> int:
         print(f"Error: {e}")
         sys.exit(1)
 
+    prompt = prompt_content
     if args.scope == "image":
         prompt = {"prompt_content": prompt_content}
-        request, response = image_processing.process_image(
-            model, args, prompt, system_instructions, marking_instructions
-        )
-    elif args.scope == "text":
-        request, response = text_processing.process_text(
-            model, args, prompt_content, system_instructions, marking_instructions
-        )
-    else:
-        request, response = code_processing.process_code(
-            model, args, prompt_content, system_instructions, marking_instructions
-        )
+
+    process = _PROCESSOR_BY_SCOPE.get(args.scope, code_processing.process_code)
+    try:
+        request, response = process(model, args, prompt, system_instructions, marking_instructions)
+    except GatewayError as e:
+        # stderr, because the autotester reports a failed run from the subprocess's
+        # stderr; on stdout this would be swallowed and shown as "exit status 1".
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
     markdown_template = load_markdown_template(args.output_template)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

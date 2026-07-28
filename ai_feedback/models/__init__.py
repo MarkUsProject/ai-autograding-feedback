@@ -6,7 +6,7 @@ from .DeepSeekModelModified import DeepSeekModelModified
 from .Model import Model
 from .OpenAIModel import OpenAIModel
 from .OpenAIModelVector import OpenAIModelVector
-from .OpenAIRemoteModel import OpenAIRemoteModel
+from .OpenAIRemoteModel import GatewayError, OpenAIRemoteModel
 from .RemoteModel import RemoteModel
 
 

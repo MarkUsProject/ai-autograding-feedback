@@ -9,10 +9,12 @@ a running proxy.
 import json
 import types
 
+import httpx
 import openai
 import pytest
+from ollama import Message
 
-from ai_feedback.models import ModelFactory, OpenAIRemoteModel
+from ai_feedback.models import GatewayError, ModelFactory, OpenAIRemoteModel
 
 METADATA = {
     "instance": "markus.cs.toronto.edu",
@@ -28,8 +30,11 @@ class _FakeCompletions:
     def __init__(self, content):
         self._content = content
         self.calls = []
+        self.error = None  # set to make create() fail the way the OpenAI SDK does
 
     def create(self, **kwargs):
+        if self.error:
+            raise self.error
         self.calls.append(kwargs)
         message = types.SimpleNamespace(content=self._content)
         choice = types.SimpleNamespace(message=message)
@@ -48,6 +53,12 @@ class _FakeClient:
         self.completions = _FakeCompletions(content)
         self.chat = types.SimpleNamespace(completions=self.completions)
         _FakeClient.last = self
+
+
+def _status_error(body):
+    """A real openai.APIStatusError carrying ``body``, as the SDK would raise it."""
+    request = httpx.Request("POST", "http://gateway:4000/v1/chat/completions")
+    return openai.APIStatusError("Error code: 400", response=httpx.Response(400, request=request), body=body)
 
 
 @pytest.fixture
@@ -137,3 +148,47 @@ def test_caller_max_tokens_wins_over_default(fake_openai):
     )
     sent = fake_openai.last.completions.calls[0]
     assert sent["max_tokens"] == 2048
+
+
+def _failing_with(sdk_error):
+    """Make the gateway raise ``sdk_error``, and return the GatewayError it becomes."""
+    model = OpenAIRemoteModel()
+    model.client.completions.error = sdk_error
+    with pytest.raises(GatewayError) as raised:
+        model.generate_response(
+            prompt="Review this code.",
+            submission_file=None,
+            system_instructions="You are a TA.",
+            model_options={},
+        )
+    return raised.value
+
+
+def test_budget_rejection_surfaces_the_gateway_message(fake_openai):
+    """The instructor-facing reason, not a stack trace ending in BadRequestError."""
+    reason = "Course budget exhausted for course_id=1: spent CAD 0.01 of CAD 0.01."
+    assert str(_failing_with(_status_error({"message": reason}))) == reason
+
+
+def test_failure_without_our_body_falls_back_to_the_sdk_message(fake_openai):
+    """A proxy error page has no 'message' key; we must still say something."""
+    assert "Error code: 400" in str(_failing_with(_status_error("<html>502 Bad Gateway</html>")))
+
+
+def test_unreachable_gateway_is_reported_the_same_way(fake_openai):
+    """A gateway restart mid-batch must not print a stack trace either."""
+    request = httpx.Request("POST", "http://gateway:4000/v1/chat/completions")
+    assert "Connection error" in str(_failing_with(openai.APIConnectionError(request=request)))
+
+
+def test_image_failure_is_reported_as_a_gateway_error(fake_openai):
+    """Image feedback goes through process_image, not _call_openai — same treatment."""
+    model = OpenAIRemoteModel()
+    model.client.completions.error = _status_error({"message": "Course budget exhausted for course_id=1."})
+    with pytest.raises(GatewayError, match="Course budget exhausted"):
+        model.process_image(Message(role="user", content="Describe this plot.", images=[]), args=None)
+
+
+def test_failure_keeps_the_original_error_for_debugging(fake_openai):
+    error = _failing_with(_status_error({"message": "Upstream API key is disabled."}))
+    assert isinstance(error.__cause__, openai.APIStatusError)

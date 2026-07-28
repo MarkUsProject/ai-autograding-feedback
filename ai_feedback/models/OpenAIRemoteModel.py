@@ -3,8 +3,31 @@ import os
 from typing import Optional
 
 import openai
+from ollama import Message
 
 from .OpenAIModel import OpenAIModel
+
+
+class GatewayError(RuntimeError):
+    """The gateway would not serve the call.
+
+    Raised instead of letting ``openai.APIError`` escape, so the reason (budget
+    exhausted, kill switch, missing attribution, gateway unreachable) reaches the
+    instructor as one readable line rather than the last line of a stack trace.
+    """
+
+
+def _failure_reason(error: openai.APIError) -> str:
+    """The gateway's own message, or the SDK's summary when the body is not ours.
+
+    Our hooks answer with ``{"error": {"message": ...}}``, which the OpenAI SDK
+    parses into ``error.body``. Anything else — a proxy error page, a connection
+    failure carrying no body — falls back to the SDK's rendering.
+    """
+    body = getattr(error, "body", None)
+    if isinstance(body, dict) and body.get("message"):
+        return str(body["message"])
+    return str(error)
 
 
 class OpenAIRemoteModel(OpenAIModel):
@@ -65,7 +88,17 @@ class OpenAIRemoteModel(OpenAIModel):
         """Delegate to OpenAIModel with max_tokens defaulted; the gateway rejects calls without it."""
         model_options = dict(model_options or {})
         model_options.setdefault("max_tokens", self.DEFAULT_MAX_TOKENS)
-        return super()._call_openai(prompt, system_instructions, model_options, schema)
+        try:
+            return super()._call_openai(prompt, system_instructions, model_options, schema)
+        except openai.APIError as exc:
+            raise GatewayError(_failure_reason(exc)) from exc
+
+    def process_image(self, message: Message, args) -> str:
+        """Delegate to OpenAIModel, reporting gateway refusals the same way as text calls."""
+        try:
+            return super().process_image(message, args)
+        except openai.APIError as exc:
+            raise GatewayError(_failure_reason(exc)) from exc
 
     @staticmethod
     def _require_api_key() -> str:
