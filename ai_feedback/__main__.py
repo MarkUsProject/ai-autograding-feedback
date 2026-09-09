@@ -40,11 +40,10 @@ def detect_submission_type(filename: str) -> str:
         str: The detected submission type.
     """
     ext = os.path.splitext(filename)[1].lower()
-    if ext in _TYPE_BY_EXTENSION:
-        return _TYPE_BY_EXTENSION[ext]
-    else:
-        print("Error: Could not auto-detect submission type.")
+    if ext not in _TYPE_BY_EXTENSION:
+        print("Error: Could not auto-detect submission type.", file=sys.stderr)
         sys.exit(1)
+    return _TYPE_BY_EXTENSION[ext]
 
 
 def load_markdown_template(template: str) -> str:
@@ -65,7 +64,7 @@ def load_markdown_template(template: str) -> str:
         with open(template_file, "r") as file:
             return file.read()
     except FileNotFoundError:
-        print(f"Error: Markdown template file '{template}.md' not found.")
+        print(f"Error: Markdown template file '{template}.md' not found.", file=sys.stderr)
         sys.exit(1)
 
 
@@ -94,7 +93,8 @@ def _load_content_with_fallback(
                 return file.read()
         except FileNotFoundError:
             print(
-                f"Error: Pre-defined {content_type} file '{content_arg}.md' not found in {predefined_subdir} subfolder."
+                f"Error: Pre-defined {content_type} file '{content_arg}.md' not found in {predefined_subdir} subfolder.",
+                file=sys.stderr,
             )
             sys.exit(1)
     else:
@@ -103,10 +103,10 @@ def _load_content_with_fallback(
             with open(content_arg, "r", encoding='utf-8') as file:
                 return file.read()
         except FileNotFoundError:
-            print(f"Error: {content_type.title()} file '{content_arg}' not found.")
+            print(f"Error: {content_type.title()} file '{content_arg}' not found.", file=sys.stderr)
             sys.exit(1)
         except Exception as e:
-            print(f"Error reading {content_type} file '{content_arg}': {e}")
+            print(f"Error reading {content_type} file '{content_arg}': {e}", file=sys.stderr)
             sys.exit(1)
 
 
@@ -167,6 +167,10 @@ def main() -> int:
     model, and output format. It loads prompts, delegates the processing to specialized
     modules (image, text, or code), and handles output generation as markdown
     or standard output.
+
+    Errors are reported on stderr and exit with status 1, so callers running
+    this module as a subprocess can separate the feedback (stdout) from the
+    reason a run failed (stderr).
 
     Returns:
         int: Exit status code (0 for success).
@@ -318,13 +322,22 @@ def main() -> int:
         predefined_prompts = arg_options.get_enum_values(arg_options.Prompt)
         if args.prompt in predefined_prompts:
             if not args.prompt.startswith("image") and args.scope == "image":
-                print("Error: The prompt must start with 'image'. Please re-run the command with a valid prompt.")
+                print(
+                    "Error: The prompt must start with 'image'. Please re-run the command with a valid prompt.",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
             if not args.prompt.startswith("code") and args.scope == "code":
-                print("Error: The prompt must start with 'code'. Please re-run the command with a valid prompt.")
+                print(
+                    "Error: The prompt must start with 'code'. Please re-run the command with a valid prompt.",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
             if not args.prompt.startswith("text") and args.scope == "text":
-                print("Error: The prompt must start with 'text'. Please re-run the command with a valid prompt.")
+                print(
+                    "Error: The prompt must start with 'text'. Please re-run the command with a valid prompt.",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
 
         prompt_content += load_prompt_content(args.prompt)
@@ -340,7 +353,7 @@ def main() -> int:
             model_args['remote_url'] = args.remote_url
         model = ModelFactory.create(args.provider, **model_args)
     except ValueError as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
     prompt = prompt_content
@@ -351,8 +364,6 @@ def main() -> int:
     try:
         request, response = process(model, args, prompt, system_instructions, marking_instructions)
     except GatewayError as e:
-        # stderr, because the autotester reports a failed run from the subprocess's
-        # stderr; on stdout this would be swallowed and shown as "exit status 1".
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 

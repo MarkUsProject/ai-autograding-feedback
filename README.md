@@ -163,6 +163,7 @@ Current providers include:
 - `deepseek` - Uses DeepSeek models via Ollama (default: `deepseek-r1:70b`)
 - `openai` - Uses OpenAI models (requires `OPENAI_API_KEY`, default: `gpt-4o`)
 - `openai-vector` - Uses OpenAI with vector store functionality (requires `OPENAI_API_KEY`)
+- `openai-remote` - Uses OpenAI-compatible models through the MarkUs LiteLLM gateway (requires `LITELLM_API_KEY` and `LITELLM_SPEND_METADATA`, `--remote_url` for the gateway, default: `gpt-4o-mini`)
 - `remote` - Uses remote API server (requires `REMOTE_API_KEY`, default: `gpt-oss:120b`)
 
 ### Using --model_name

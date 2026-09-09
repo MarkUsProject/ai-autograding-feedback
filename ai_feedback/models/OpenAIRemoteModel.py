@@ -45,14 +45,20 @@ class OpenAIRemoteModel(OpenAIModel):
     Attribution metadata (instance, course_id, assignment_id, group_id,
     batch_id, category) is read from the ``LITELLM_SPEND_METADATA`` environment
     variable and forwarded verbatim as the ``x-litellm-spend-logs-metadata``
-    header. The autotester's AI tester sets that variable per invocation. The
-    gateway's pre-call hook reads the header to attribute spend to the right
-    course and to enforce the gatekeeper budget. See the ai-telemetry-gateway
-    project for the receiving side.
+    header. Both ``LITELLM_API_KEY`` and ``LITELLM_SPEND_METADATA`` must be set;
+    the gateway's pre-call hook reads the header to attribute spend to the right
+    course and to enforce the gatekeeper budget, and refuses unattributed calls.
+    See the ai-telemetry-gateway project for the receiving side.
     """
 
     #: Header LiteLLM reads to persist arbitrary metadata on each spend-log row.
     METADATA_HEADER = "x-litellm-spend-logs-metadata"
+
+    #: Environment variable holding the LiteLLM virtual key sent as ``Authorization: Bearer``.
+    API_KEY_ENV = "LITELLM_API_KEY"
+
+    #: Environment variable holding the attribution JSON forwarded as ``METADATA_HEADER``.
+    SPEND_METADATA_ENV = "LITELLM_SPEND_METADATA"
 
     #: Reply-size cap sent when the caller does not pick one. The gateway
     #: rejects calls that omit max_tokens, and the autotester exposes no
@@ -68,13 +74,12 @@ class OpenAIRemoteModel(OpenAIModel):
 
         Args:
             remote_url: Base URL of the LiteLLM proxy's OpenAI-compatible API
-                (the ``/v1`` root). Supplied by the autotester via ``--remote_url``.
+                (the ``/v1`` root).
             model_name: The model to request, e.g. ``gpt-4o-mini``. Must be one
                 of the models the gateway is configured to allow.
         """
-        # Bypass OpenAIModel.__init__ on purpose: it builds a client against
-        # api.openai.com using OPENAI_API_KEY, which is not how we authenticate
-        # to the gateway. We build our own client below.
+        # Override the client set by OpenAIModel.__init__ to authenticate against
+        # the ai-telemetry-gateway instead of api.openai.com.
         super(OpenAIModel, self).__init__(model_name)
         self.client = openai.OpenAI(
             base_url=remote_url,
@@ -101,35 +106,36 @@ class OpenAIRemoteModel(OpenAIModel):
             raise GatewayError(_failure_reason(exc)) from exc
 
     @staticmethod
-    def _require_api_key() -> str:
+    def _require_env(name: str, purpose: str) -> str:
+        """The value of environment variable ``name``, or a RuntimeError naming it and ``purpose``."""
+        value = os.getenv(name)
+        if not value:
+            raise RuntimeError(f"{name} is not set. {purpose}")
+        return value
+
+    @classmethod
+    def _require_api_key(cls) -> str:
         """The LiteLLM virtual key sent as 'Authorization: Bearer'."""
-        api_key = os.getenv("LITELLM_API_KEY")
-        if not api_key:
-            raise RuntimeError(
-                "LITELLM_API_KEY is not set. The gateway authenticates callers "
-                "with a LiteLLM virtual key sent as 'Authorization: Bearer'."
-            )
-        return api_key
+        return cls._require_env(
+            cls.API_KEY_ENV,
+            "The gateway authenticates callers with a LiteLLM virtual key sent as 'Authorization: Bearer'.",
+        )
 
     @classmethod
     def _attribution_headers(cls) -> dict:
-        """The x-litellm-spend-logs-metadata header, or {} when unset.
+        """The x-litellm-spend-logs-metadata header built from the environment.
 
-        Forwarded as-is — the autotester produces the JSON — but we fail loud on
-        malformed JSON rather than ship a broken header.
+        Forwarded as-is — the caller produces the JSON — but we fail loud when it
+        is missing or malformed rather than ship a call the gateway will refuse.
         """
-        metadata = os.getenv("LITELLM_SPEND_METADATA")
-        if not metadata:
-            return {}
+        metadata = cls._require_env(
+            cls.SPEND_METADATA_ENV,
+            "The gateway refuses calls without attribution metadata (instance, course_id, assignment_id, ...).",
+        )
         try:
             json.loads(metadata)
         except (json.JSONDecodeError, TypeError) as exc:
             raise RuntimeError(
-                "LITELLM_SPEND_METADATA is not valid JSON; refusing to send a malformed attribution header."
+                f"{cls.SPEND_METADATA_ENV} is not valid JSON; refusing to send a malformed attribution header."
             ) from exc
         return {cls.METADATA_HEADER: metadata}
-
-    @property
-    def spend_logs_metadata(self) -> Optional[str]:
-        """The attribution header value sent on every call, or None if unset."""
-        return self.client.default_headers.get(self.METADATA_HEADER)

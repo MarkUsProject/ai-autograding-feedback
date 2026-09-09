@@ -64,13 +64,19 @@ def _status_error(body):
 @pytest.fixture
 def fake_openai(monkeypatch):
     monkeypatch.setattr(openai, "OpenAI", _FakeClient)
+    monkeypatch.setattr(_FakeClient, "last", None)
     return _FakeClient
 
 
 @pytest.fixture(autouse=True)
 def gateway_env(monkeypatch):
-    monkeypatch.setenv("LITELLM_API_KEY", "sk-test-virtual-key")
-    monkeypatch.delenv("LITELLM_SPEND_METADATA", raising=False)
+    monkeypatch.setenv(OpenAIRemoteModel.API_KEY_ENV, "sk-test-virtual-key")
+    monkeypatch.setenv(OpenAIRemoteModel.SPEND_METADATA_ENV, json.dumps(METADATA))
+
+
+def _sent_metadata_header(fake_openai):
+    """The attribution header the model handed to the OpenAI client, or None."""
+    return fake_openai.last.default_headers.get(OpenAIRemoteModel.METADATA_HEADER)
 
 
 def test_provider_is_registered():
@@ -84,28 +90,26 @@ def test_client_targets_gateway_with_bearer_auth(fake_openai):
     assert fake_openai.last.api_key == "sk-test-virtual-key"
 
 
-def test_attaches_metadata_header_when_set(monkeypatch, fake_openai):
-    monkeypatch.setenv("LITELLM_SPEND_METADATA", json.dumps(METADATA))
-    model = OpenAIRemoteModel()
-    header = fake_openai.last.default_headers[OpenAIRemoteModel.METADATA_HEADER]
-    assert json.loads(header) == METADATA
-    assert model.spend_logs_metadata == header
-
-
-def test_no_metadata_header_when_unset(fake_openai):
-    model = OpenAIRemoteModel()
-    assert OpenAIRemoteModel.METADATA_HEADER not in fake_openai.last.default_headers
-    assert model.spend_logs_metadata is None
+def test_attaches_metadata_header_verbatim(fake_openai):
+    OpenAIRemoteModel()
+    assert json.loads(_sent_metadata_header(fake_openai)) == METADATA
 
 
 def test_missing_api_key_fails_loud(monkeypatch, fake_openai):
-    monkeypatch.delenv("LITELLM_API_KEY", raising=False)
+    monkeypatch.delenv(OpenAIRemoteModel.API_KEY_ENV, raising=False)
     with pytest.raises(RuntimeError, match="LITELLM_API_KEY"):
         OpenAIRemoteModel()
 
 
+def test_missing_metadata_fails_loud(monkeypatch, fake_openai):
+    monkeypatch.delenv(OpenAIRemoteModel.SPEND_METADATA_ENV, raising=False)
+    with pytest.raises(RuntimeError, match="LITELLM_SPEND_METADATA"):
+        OpenAIRemoteModel()
+    assert fake_openai.last is None
+
+
 def test_malformed_metadata_fails_loud(monkeypatch, fake_openai):
-    monkeypatch.setenv("LITELLM_SPEND_METADATA", "{not valid json")
+    monkeypatch.setenv(OpenAIRemoteModel.SPEND_METADATA_ENV, "{not valid json")
     with pytest.raises(RuntimeError, match="not valid JSON"):
         OpenAIRemoteModel()
 
