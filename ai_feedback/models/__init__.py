@@ -6,6 +6,7 @@ from .DeepSeekModelModified import DeepSeekModelModified
 from .Model import Model
 from .OpenAIModel import OpenAIModel
 from .OpenAIModelVector import OpenAIModelVector
+from .OpenAIRemoteModel import GatewayError, OpenAIRemoteModel
 from .RemoteModel import RemoteModel
 
 
@@ -14,6 +15,7 @@ class ModelFactory:
 
     _registry: Dict[str, Type[Model]] = {
         "remote": RemoteModel,
+        "openai-remote": OpenAIRemoteModel,
         "claude": ClaudeModel,
         "openai": OpenAIModel,
         "codellama": CodeLlamaModel,
