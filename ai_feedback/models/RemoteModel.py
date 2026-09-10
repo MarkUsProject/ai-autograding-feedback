@@ -22,7 +22,7 @@ class RemoteModel(Model):
     def __init__(
         self,
         remote_url: str = "https://polymouth.teach.cs.toronto.edu:443/chat",
-        model_name: str = "gpt-oss:120b",
+        model_name: str = "qwen3:1.7b",
     ) -> None:
         """Initializes the remote model with a remote URL and model name."""
         super().__init__(model_name)
