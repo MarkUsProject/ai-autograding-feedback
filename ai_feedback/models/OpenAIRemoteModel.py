@@ -31,34 +31,34 @@ def _failure_reason(error: openai.APIError) -> str:
 
 
 class OpenAIRemoteModel(OpenAIModel):
-    """An OpenAI-compatible model served through the MarkUs LiteLLM gateway.
+    """An OpenAI-compatible model served through the MarkUs AI gateway.
 
     This is the sibling of :class:`RemoteModel`. ``RemoteModel`` talks to the
     ``markus-ai-server`` proxy ("polymouth") with a custom payload and an
     ``X-API-KEY`` header. ``OpenAIRemoteModel`` instead speaks the standard
     OpenAI chat-completion contract (``Authorization: Bearer`` + OpenAI
-    request/response schema), which is what the self-hosted LiteLLM proxy
+    request/response schema), which is what the self-hosted gateway
     expects. The only differences from :class:`OpenAIModel` are the endpoint
-    (the LiteLLM gateway rather than ``api.openai.com``) and the per-call
+    (the gateway rather than ``api.openai.com``) and the per-call
     attribution header.
 
     Attribution metadata (instance, course_id, assignment_id, group_id,
-    batch_id, category) is read from the ``LITELLM_SPEND_METADATA`` environment
+    batch_id, category) is read from the ``GATEWAY_SPEND_METADATA`` environment
     variable and forwarded verbatim as the ``x-litellm-spend-logs-metadata``
-    header. Both ``LITELLM_API_KEY`` and ``LITELLM_SPEND_METADATA`` must be set;
+    header. Both ``GATEWAY_API_KEY`` and ``GATEWAY_SPEND_METADATA`` must be set;
     the gateway's pre-call hook reads the header to attribute spend to the right
     course and to enforce the gatekeeper budget, and refuses unattributed calls.
     See the ai-telemetry-gateway project for the receiving side.
     """
 
-    #: Header LiteLLM reads to persist arbitrary metadata on each spend-log row.
+    #: Header LiteLLM parses natively; the gateway's hooks read the parsed result to attribute spend.
     METADATA_HEADER = "x-litellm-spend-logs-metadata"
 
-    #: Environment variable holding the LiteLLM virtual key sent as ``Authorization: Bearer``.
-    API_KEY_ENV = "LITELLM_API_KEY"
+    #: Environment variable holding the gateway virtual key sent as ``Authorization: Bearer``.
+    API_KEY_ENV = "GATEWAY_API_KEY"
 
     #: Environment variable holding the attribution JSON forwarded as ``METADATA_HEADER``.
-    SPEND_METADATA_ENV = "LITELLM_SPEND_METADATA"
+    SPEND_METADATA_ENV = "GATEWAY_SPEND_METADATA"
 
     #: Reply-size cap sent when the caller does not pick one. The gateway
     #: rejects calls that omit max_tokens, and the autotester exposes no
@@ -70,10 +70,10 @@ class OpenAIRemoteModel(OpenAIModel):
         remote_url: str = "http://localhost:4000/v1",
         model_name: str = "gpt-4o-mini",
     ) -> None:
-        """Initialize a client pointed at the LiteLLM gateway.
+        """Initialize a client pointed at the gateway.
 
         Args:
-            remote_url: Base URL of the LiteLLM proxy's OpenAI-compatible API
+            remote_url: Base URL of the gateway's OpenAI-compatible API
                 (the ``/v1`` root).
             model_name: The model to request, e.g. ``gpt-4o-mini``. Must be one
                 of the models the gateway is configured to allow.
@@ -115,10 +115,10 @@ class OpenAIRemoteModel(OpenAIModel):
 
     @classmethod
     def _require_api_key(cls) -> str:
-        """The LiteLLM virtual key sent as 'Authorization: Bearer'."""
+        """The gateway virtual key sent as 'Authorization: Bearer'."""
         return cls._require_env(
             cls.API_KEY_ENV,
-            "The gateway authenticates callers with a LiteLLM virtual key sent as 'Authorization: Bearer'.",
+            "The gateway authenticates callers with a virtual key sent as 'Authorization: Bearer'.",
         )
 
     @classmethod

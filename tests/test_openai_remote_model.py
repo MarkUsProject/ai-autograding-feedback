@@ -1,4 +1,4 @@
-"""Tests for OpenAIRemoteModel — the LiteLLM-gateway-backed OpenAI model.
+"""Tests for OpenAIRemoteModel — the gateway-backed OpenAI model.
 
 These tests never touch the network. They patch ``openai.OpenAI`` with a fake
 client that records construction kwargs and returns a canned chat completion,
@@ -97,13 +97,13 @@ def test_attaches_metadata_header_verbatim(fake_openai):
 
 def test_missing_api_key_fails_loud(monkeypatch, fake_openai):
     monkeypatch.delenv(OpenAIRemoteModel.API_KEY_ENV, raising=False)
-    with pytest.raises(RuntimeError, match="LITELLM_API_KEY"):
+    with pytest.raises(RuntimeError, match="GATEWAY_API_KEY"):
         OpenAIRemoteModel()
 
 
 def test_missing_metadata_fails_loud(monkeypatch, fake_openai):
     monkeypatch.delenv(OpenAIRemoteModel.SPEND_METADATA_ENV, raising=False)
-    with pytest.raises(RuntimeError, match="LITELLM_SPEND_METADATA"):
+    with pytest.raises(RuntimeError, match="GATEWAY_SPEND_METADATA"):
         OpenAIRemoteModel()
     assert fake_openai.last is None
 
